@@ -9,14 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* 🎨 සාමාන්‍ය සැකසුම් (Global Styles) */
+        /* 🎨 සාමාන්‍ย සැකසුම් (Global Styles) */
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: #030305;
+            background: #020204;
             color: #fff;
             overflow-x: hidden;
-            padding-bottom: 90px; /* පල්ලෙහායින් එන මියුසික් බාර් එකට ඉඩ තැබීමට */
+            padding-bottom: 90px;
         }
 
         /* 🎬 පසුබිම් වීඩියෝව */
@@ -26,10 +26,10 @@
             min-width: 100%; min-height: 100%;
             z-index: -2;
             object-fit: cover;
-            opacity: 0.3;
+            opacity: 0.25;
         }
 
-        /* ✨ පාවෙන තරු සිස්ටම් එක */
+        /* ✨ පාවෙන තරු සිස්ටම් එක (Canvas Particles) */
         #particles-js {
             position: fixed;
             top: 0; left: 0;
@@ -42,88 +42,103 @@
         header {
             position: fixed; top: 0; left: 0; width: 100%;
             padding: 20px 8%;
-            background: rgba(5, 5, 10, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(4, 4, 8, 0.85);
+            backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 100; border-bottom: 1px solid rgba(255, 0, 127, 0.2);
+            z-index: 100; border-bottom: 1px solid rgba(255, 0, 127, 0.25);
         }
-        .logo { font-family: 'Cinzel', serif; font-size: 24px; color: #fff; text-shadow: 0 0 10px #ff007f; text-decoration: none; }
-        .nav-links { display: flex; list-style: none; gap: 30px; }
-        .nav-links a { color: #ccc; text-decoration: none; font-size: 14px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .logo { font-family: 'Cinzel', serif; font-size: 26px; color: #fff; text-shadow: 0 0 12px #ff007f; text-decoration: none; font-weight: 900; }
+        .nav-links { display: flex; list-style: none; gap: 25px; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 13px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         .nav-links a:hover { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
 
         /* 👑 Hero Section (ප්‍රධාන පෙනුම) */
         .hero {
             min-height: 100vh; padding: 0 8%;
-            display: flex; align-items: center; justify-content: space-between; gap: 50px;
-            padding-top: 100px;
+            display: flex; align-items: center; justify-content: space-between; gap: 40px;
+            padding-top: 120px;
         }
-        .hero-content { max-width: 600px; }
+        .hero-content { max-width: 650px; }
         .live-status {
             display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255, 0, 127, 0.1); border: 1px solid #ff007f;
-            padding: 6px 15px; border-radius: 20px; font-size: 12px; color: #ff99cc;
-            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;
+            background: rgba(255, 0, 127, 0.12); border: 1px solid #ff007f;
+            padding: 6px 16px; border-radius: 20px; font-size: 12px; color: #ff99cc;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px;
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
         }
         .status-dot { width: 8px; height: 8px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66; animation: pulse 1.5s infinite; }
-        .hero-title { font-family: 'Cinzel', serif; font-size: 55px; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255, 0, 127, 0.5); }
+        .hero-title { font-family: 'Cinzel', serif; font-size: 52px; line-height: 1.1; margin-bottom: 25px; text-shadow: 0 0 20px rgba(255, 0, 127, 0.4); }
         .hero-title span { color: #ff007f; }
-        .hero-desc { color: #aaa; font-size: 15px; margin-bottom: 35px; line-height: 1.6; }
+        .hero-desc { color: #bbb; font-size: 15px; margin-bottom: 35px; line-height: 1.6; }
         
         .main-btn {
             background: linear-gradient(135deg, #ff007f, #ff00ff);
-            color: white; border: none; padding: 18px 40px;
-            font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: bold;
+            color: white; border: none; padding: 16px 38px;
+            font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: bold;
             border-radius: 50px; cursor: pointer; letter-spacing: 2px;
             box-shadow: 0 5px 25px rgba(255, 0, 127, 0.4); transition: 0.4s;
         }
         .main-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 35px rgba(255, 0, 127, 0.8); }
 
         .hero-img-container { position: relative; }
-        .hero-img { width: 350px; height: 350px; border-radius: 50%; object-fit: cover; border: 4px solid #ff007f; box-shadow: 0 0 50px rgba(255, 0, 127, 0.5); }
+        .hero-img { width: 340px; height: 340px; border-radius: 50%; object-fit: cover; border: 4px solid #ff007f; box-shadow: 0 0 45px rgba(255, 0, 127, 0.45); }
 
-        /* 📺 YouTube Section */
-        .section { padding: 80px 8%; text-align: center; }
-        .section-title { font-family: 'Cinzel', serif; font-size: 36px; margin-bottom: 15px; letter-spacing: 2px; }
+        /* 📺 පොදු කොටස් සැකසුම් (Section Layouts) */
+        .section { padding: 90px 8%; text-align: center; }
+        .section-title { font-family: 'Cinzel', serif; font-size: 38px; margin-bottom: 12px; letter-spacing: 2px; }
         .section-title span { color: #ff007f; }
-        .section-subtitle { color: #777; font-size: 14px; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 3px; }
+        .section-subtitle { color: #666; font-size: 13px; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 3px; }
         
+        /* 📺 වීඩියෝ ප්ලේයර් කොටස */
         .video-container {
             max-width: 850px; margin: 0 auto;
             border-radius: 20px; overflow: hidden;
-            border: 2px solid rgba(255, 0, 127, 0.3);
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.15);
+            border: 2px solid rgba(255, 0, 127, 0.35);
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.2);
             aspect-ratio: 16/9; background: #000;
         }
         .video-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* ⚔️ Leaderboard Section */
-        .leaderboard-table {
-            max-width: 700px; margin: 0 auto; width: 100%;
-            background: rgba(10, 10, 20, 0.6); backdrop-filter: blur(10px);
-            border-radius: 20px; border: 1px solid rgba(255, 0, 127, 0.2);
-            border-collapse: collapse; overflow: hidden;
+        /* 👥 Shrek Seven Devils Cards */
+        .devils-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-top: 20px; }
+        .devil-card {
+            background: rgba(10, 10, 18, 0.75); border: 1px solid rgba(255, 0, 127, 0.15);
+            border-radius: 20px; padding: 25px 15px; text-align: center; transition: 0.4s;
         }
-        .leaderboard-table th, .leaderboard-table td { padding: 15px 25px; text-align: left; }
-        .leaderboard-table th { background: rgba(255, 0, 127, 0.15); font-family: 'Orbitron', sans-serif; color: #ff3399; font-size: 14px; letter-spacing: 1px; }
-        .leaderboard-table tr { border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
-        .leaderboard-table tr:hover { background: rgba(255, 0, 127, 0.05); }
-        .rank-badge { background: #ff007f; padding: 3px 10px; border-radius: 5px; font-weight: bold; font-family: 'Orbitron', sans-serif; font-size: 12px; }
-        .user-soul { font-size: 12px; color: #ff99cc; font-style: italic; }
+        .devil-card:hover { transform: translateY(-8px); border-color: #ff007f; box-shadow: 0 12px 30px rgba(255, 0, 127, 0.25); }
+        .devil-badge { display: inline-block; padding: 4px 12px; background: rgba(255, 0, 127, 0.15); border: 1px solid #ff007f; border-radius: 12px; font-size: 11px; color: #ff99cc; margin-bottom: 15px; font-family: 'Orbitron', sans-serif; }
+        .devil-name { font-family: 'Orbitron', sans-serif; font-size: 18px; margin-bottom: 10px; color: #fff; }
+        .devil-soul { font-size: 13px; color: #ff3399; font-style: italic; margin-bottom: 10px; }
+        .devil-desc { font-size: 12px; color: #888; line-height: 1.5; }
 
-        /* 📖 Encyclopedia Section */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
-        .card {
-            background: rgba(15, 15, 25, 0.7); border: 1px solid rgba(255, 0, 127, 0.15);
-            padding: 30px 20px; border-radius: 20px; transition: 0.4s; text-align: left;
+        /* ⚔️ වගු සැකසුම් (Table Style Upgrade) */
+        .table-wrapper { overflow-x: auto; max-width: 850px; margin: 0 auto; border-radius: 15px; border: 1px solid rgba(255, 0, 127, 0.25); }
+        .premium-table { width: 100%; border-collapse: collapse; background: rgba(8, 8, 14, 0.7); text-align: left; }
+        .premium-table th, .premium-table td { padding: 16px 22px; font-size: 14px; }
+        .premium-table th { background: rgba(255, 0, 127, 0.2); font-family: 'Orbitron', sans-serif; color: #ff3399; letter-spacing: 1px; font-size: 13px; }
+        .premium-table tr { border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
+        .premium-table tr:hover { background: rgba(255, 0, 127, 0.06); }
+        
+        .ring-badge { display: inline-block; width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 10px currentColor; vertical-align: middle; margin-right: 10px; }
+        .rank-badge { background: #ff007f; padding: 4px 10px; border-radius: 5px; font-weight: bold; font-family: 'Orbitron', sans-serif; font-size: 11px; }
+
+        /* 📞 හදිසි උපකාරක කොටස (Emergency Support Section) */
+        .support-box {
+            max-width: 600px; margin: 0 auto; background: rgba(255, 0, 127, 0.06);
+            border: 2px dashed rgba(255, 0, 127, 0.4); padding: 35px 25px; border-radius: 25px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.1);
         }
-        .card:hover { transform: translateY(-5px); border-color: #ff007f; box-shadow: 0 10px 25px rgba(255, 0, 127, 0.2); }
-        .card-icon { font-size: 35px; margin-bottom: 15px; display: inline-block; }
-        .card-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: #fff; margin-bottom: 10px; }
-        .card-desc { color: #888; font-size: 13px; line-height: 1.5; }
+        .support-title { font-family: 'Orbitron', sans-serif; font-size: 20px; color: #fff; margin-bottom: 10px; }
+        .support-desc { font-size: 13px; color: #aaa; margin-bottom: 25px; line-height: 1.6; }
+        .support-btn {
+            display: inline-flex; align-items: center; gap: 12px; background: #25D366;
+            color: #fff; text-decoration: none; padding: 15px 35px; border-radius: 50px;
+            font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: bold;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); transition: 0.3s;
+        }
+        .support-btn:hover { transform: translateY(-3px); box-shadow: 0 7px 30px rgba(37, 211, 102, 0.7); }
 
-        /* 📟 🔮 POPUP MODAL (Pairing කොටස) */
+        /* 📟 පේයාරින් පොපප් බොක්ස් එක (Pairing Modal) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px);
@@ -131,80 +146,57 @@
             opacity: 0; transition: opacity 0.4s ease;
         }
         .modal-box {
-            background: rgba(10, 10, 15, 0.95); padding: 40px 30px;
+            background: rgba(8, 8, 12, 0.96); padding: 40px 30px;
             border-radius: 30px; border: 2px solid rgba(255, 0, 127, 0.4);
-            box-shadow: 0 0 50px rgba(255, 0, 127, 0.3);
+            box-shadow: 0 0 50px rgba(255, 0, 127, 0.35);
             max-width: 440px; width: 90%; text-align: center; position: relative;
             transform: scale(0.8); transition: transform 0.4s ease;
         }
-        .close-modal {
-            position: absolute; top: 15px; right: 20px;
-            font-size: 30px; color: #aaa; cursor: pointer; transition: 0.3s;
-        }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; color: #aaa; cursor: pointer; transition: 0.3s; }
         .close-modal:hover { color: #ff007f; }
-
-        .modal-logo {
-            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
-            border: 3px solid #ff007f; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-            margin-bottom: 15px;
-        }
-
-        .dialogue-box {
-            background: rgba(255, 0, 127, 0.15); border: 1px solid #ff007f;
-            border-radius: 15px; padding: 12px 18px; font-size: 13px; color: #ffccff;
-            margin-bottom: 25px; font-style: italic; min-height: 50px;
-            display: flex; align-items: center; justify-content: center; line-height: 1.4;
-        }
-        .modal-box h2 { font-family: 'Cinzel', serif; font-size: 32px; text-shadow: 0 0 15px #ff007f; margin-bottom: 25px; }
-        input[type="text"] {
-            width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 0, 127, 0.3); border-radius: 15px;
-            color: white; font-size: 16px; text-align: center; outline: none; transition: 0.3s;
-        }
+        .modal-logo { width: 95px; height: 95px; border-radius: 50%; object-fit: cover; border: 3px solid #ff007f; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); margin-bottom: 15px; }
+        .dialogue-box { background: rgba(255, 0, 127, 0.12); border: 1px solid #ff007f; border-radius: 15px; padding: 14px; font-size: 13px; color: #ffccff; margin-bottom: 25px; font-style: italic; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        input[type="text"] { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 0, 127, 0.3); border-radius: 15px; color: white; font-size: 16px; text-align: center; outline: none; transition: 0.3s; }
         input[type="text"]:focus { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
-        
-        .submit-btn {
-            width: 100%; background: linear-gradient(135deg, #ff007f, #ff00ff);
-            color: white; border: none; padding: 15px;
-            font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: bold;
-            border-radius: 15px; cursor: pointer; margin-top: 20px; letter-spacing: 2px;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
-        }
+        .submit-btn { width: 100%; background: linear-gradient(135deg, #ff007f, #ff00ff); color: white; border: none; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: bold; border-radius: 15px; cursor: pointer; margin-top: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 0, 127, 0.6); }
-
-        .btn-icon-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
-
+        .btn-icon-mini { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
+        
         .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; margin-top: 25px; display: none; overflow: hidden; }
         .progress-bar { width: 0%; height: 100%; background: #ff007f; box-shadow: 0 0 15px #ff007f; transition: width 0.05s linear; }
         .percentage-text { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #ff007f; text-shadow: 0 0 10px #ff007f; margin-top: 15px; display: none; font-weight: bold; }
-        
         .code-container { margin-top: 25px; padding: 20px; background: rgba(0, 0, 0, 0.7); border: 2px dashed #ff007f; border-radius: 15px; display: none; }
         .pairing-code { font-size: 28px; font-weight: 900; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #ff007f; font-family: 'Orbitron', sans-serif; }
 
-        /* 🔊 🎧 ප්‍රීමියම් පහළ මියුසික් පාලක බාර් එක (Audio Control Bar) */
+        /* 🔊 පල්ලෙහායින් තියෙන මියුසික් කන්ට්‍රෝල් බාර් එක */
         .audio-player-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(15px);
+            background: rgba(8, 8, 14, 0.95); backdrop-filter: blur(15px);
             border-top: 2px solid rgba(255, 0, 127, 0.4);
             padding: 15px 8%; display: flex; align-items: center; justify-content: space-between;
-            z-index: 999; box-shadow: 0 -5px 25px rgba(255, 0, 127, 0.2);
+            z-index: 999; box-shadow: 0 -5px 25px rgba(255, 0, 127, 0.25);
         }
         .audio-info { display: flex; align-items: center; gap: 15px; }
         .audio-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff007f; object-fit: cover; }
         .audio-text h4 { font-size: 14px; font-family: 'Orbitron', sans-serif; color: #fff; letter-spacing: 1px; }
         .audio-text p { font-size: 11px; color: #ff99cc; }
-        
         .audio-controls-right { display: flex; align-items: center; gap: 20px; width: 40%; max-width: 300px; justify-content: flex-end; }
-        .mute-btn {
-            background: #ff007f; color: white; border: none; padding: 8px 18px;
-            border-radius: 30px; font-weight: bold; font-family: 'Orbitron', sans-serif;
-            font-size: 11px; cursor: pointer; box-shadow: 0 0 10px rgba(255, 0, 127, 0.4); transition: 0.3s;
-        }
+        .mute-btn { background: #ff007f; color: white; border: none; padding: 8px 18px; border-radius: 30px; font-weight: bold; font-family: 'Orbitron', sans-serif; font-size: 11px; cursor: pointer; box-shadow: 0 0 10px rgba(255, 0, 127, 0.4); transition: 0.3s; }
         .mute-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff007f; }
         .volume-slider { width: 60%; accent-color: #ff007f; cursor: pointer; background: rgba(255,255,255,0.1); height: 5px; border-radius: 5px; }
 
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-        footer { text-align: center; padding: 30px; font-size: 12px; color: #444; border-top: 1px solid rgba(255, 255, 255, 0.02); }
+        
+        /* 👑 ලියෝගේ නම සහ ලංකාවේ කොඩිය සහිත අලුත්ම ප්‍රීමියම් Footer එක */
+        footer {
+            text-align: center; padding: 40px; font-size: 13px; color: #555;
+            border-top: 1px solid rgba(255, 0, 127, 0.1); background: rgba(4,4,8,0.9);
+        }
+        .liyo-credit {
+            font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900;
+            color: #fff; text-shadow: 0 0 15px #ff007f; margin-bottom: 8px; letter-spacing: 2px;
+        }
+        .liyo-credit span { color: #ff007f; }
     </style>
 </head>
 <body>
@@ -219,9 +211,11 @@
         <a href="#" class="logo">XIAO WU MD</a>
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
+            <li><a href="#devils">Seven Devils</a></li>
             <li><a href="#videos">Episodes</a></li>
+            <li><a href="#rings">Spirit Rings</a></li>
             <li><a href="#arena">Arena</a></li>
-            <li><a href="#encyclopedia">Encyclopedia</a></li>
+            <li><a href="#support">Support</a></li>
         </ul>
     </header>
 
@@ -239,7 +233,38 @@
         </div>
     </section>
 
-    <section class="section" style="background: rgba(5,5,10,0.4);" id="videos">
+    <section class="section" style="background: rgba(5,5,10,0.3);" id="devils">
+        <h2 class="section-title">The Shrek <span>Seven Devils</span></h2>
+        <div class="section-subtitle">Meet the core legends of the spirit continent</div>
+        <div class="devils-grid">
+            <div class="devil-card">
+                <span class="devil-badge">Leader / God</span>
+                <div class="devil-name">Tang San</div>
+                <div class="devil-soul">Clear Sky Hammer / Blue Silver Emperor</div>
+                <div class="devil-desc">Soul Land කතාවේ ප්‍රධාන වීරයා වන අතර, දෙවියෙකුගේ තත්ත්වයට පත් වූ අසමසම සටන්කාමියාය.</div>
+            </div>
+            <div class="devil-card">
+                <span class="devil-badge">Spirit Beast</span>
+                <div class="devil-name">Xiao Wu</div>
+                <div class="devil-soul">Soft Bone Rabbit</div>
+                <div class="devil-desc">අවුරුදු ලක්ෂයක ආත්ම මෘගයෙකු වන ඇය, Tang San වෙනුවෙන් තම ජීවිතය පවා පරිත්‍යාග කළාය.</div>
+            </div>
+            <div class="devil-card">
+                <span class="devil-badge">Captain</span>
+                <div class="devil-name">Dai Mubai</div>
+                <div class="devil-soul">White Tiger</div>
+                <div class="devil-desc">Shrek Devils කණ්ඩායමේ නායකයා වන අතර ප්‍රබල ශාරීරික ප්‍රහාර එල්ල කිරීමේ දක්ෂයෙකි.</div>
+            </div>
+            <div class="devil-card">
+                <span class="devil-badge">Agility System</span>
+                <div class="devil-name">Zhu Zhuqing</div>
+                <div class="devil-soul">Hell Civet Cat</div>
+                <div class="devil-desc">අතිශය වේගවත් චලනයන් සහිත, සතුරන් නොමඟ යවා ක්ෂණික ප්‍රහාර දියත් කරන සුරූපිනියකි.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="videos">
         <h2 class="section-title">Soul Land <span>Official Episodes</span></h2>
         <div class="section-subtitle">Watch directly from the spirit world Hub</div>
         <div class="video-container">
@@ -247,60 +272,95 @@
         </div>
     </section>
 
+    <section class="section" style="background: rgba(5,5,10,0.3);" id="rings">
+        <h2 class="section-title">Spirit Ring <span>System Matrix</span></h2>
+        <div class="section-subtitle">Understanding the classification of soul power essence</div>
+        <div class="table-wrapper">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Ring Color</th>
+                        <th>Soul Age Range</th>
+                        <th>Power Classification Aura</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ring-badge" style="background: #fff; color: #fff;"></span> සුදු පැහැය (White)</td>
+                        <td>අවුරුදු 10 - 99</td>
+                        <td>මූලික ආත්ම සටන් පුහුණුකරුවන්ගේ බලය (Basic Trainee Power)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ring-badge" style="background: #ffcc00; color: #ffcc00;"></span> කහ පැහැය (Yellow)</td>
+                        <td>අවුරුදු 100 - 999</td>
+                        <td>දක්ෂ සටන්කාමීන් සතු ආත්ම ශක්තිය (Elite Grandmaster Power)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ring-badge" style="background: #cc00ff; color: #cc00ff;"></span> දම් පැහැය (Purple)</td>
+                        <td>අවුරුදු 1,000 - 9,999</td>
+                        <td>ඉහළ පෙළේ ආත්ම සටන්කාමීන්ගේ සුවිශේෂී බලය (Spirit Elder Rarity)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ring-badge" style="background: #111; color: #444; border: 1px solid #fff;"></span> කළු පැහැය (Black)</td>
+                        <td>අවුරුදු 10,000 - 99,999</td>
+                        <td>Title Douluo මට්ටමේ සටන්කාමීන්ට පමණක් හිමිවන දුර්ලභ බලයකි.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ring-badge" style="background: #ff0000; color: #ff0000;"></span> රතු පැහැය (Red)</td>
+                        <td>අවුරුදු 100,000 කට වඩා වැඩි</td>
+                        <td>දේවත්වයට සමාන අතිශය බලගතු පුරාවෘත්තීය මට්ටම (Xiao Wu Sacrifice Level)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <section class="section" id="arena">
         <h2 class="section-title">Spirit Arena <span>Leaderboard</span></h2>
         <div class="section-subtitle">Top Spirit Masters of Xiao Wu MD</div>
-        <table class="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Spirit Master</th>
-                    <th>Martial Soul</th>
-                    <th>Soul Power</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="rank-badge">Rank 1</span></td>
-                    <td>Tang San (Owner)</td>
-                    <td class="user-soul">Blue Silver Emperor</td>
-                    <td style="color: #ff007f; font-weight: bold;">Lv. 100 (God)</td>
-                </tr>
-                <tr>
-                    <td><span class="rank-badge" style="background: #ff00ff;">Rank 2</span></td>
-                    <td>B4K GAMING</td>
-                    <td class="user-soul">Soft Bone Rabbit</td>
-                    <td style="color: #ff00ff;">Lv. 95 (Hyper Douluo)</td>
-                </tr>
-                <tr>
-                    <td><span class="rank-badge" style="background: #9900ff;">Rank 3</span></td>
-                    <td>SoulMaster_01</td>
-                    <td class="user-soul">Clear Sky Hammer</td>
-                    <td>Lv. 89 (Spirit Douluo)</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Spirit Master</th>
+                        <th>Martial Soul</th>
+                        <th>Soul Power Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="rank-badge">Rank 1</span></td>
+                        <td>Tang San (Owner)</td>
+                        <td style="color: #ff99cc;">Blue Silver Emperor</td>
+                        <td style="color: #ff007f; font-weight: bold;">Lv. 100 (God Rank)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-badge" style="background: #ff00ff;">Rank 2</span></td>
+                        <td>B4K GAMING</td>
+                        <td style="color: #ff99cc;">Soft Bone Rabbit</td>
+                        <td style="color: #ff00ff;">Lv. 95 (Hyper Douluo)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="rank-badge" style="background: #9900ff;">Rank 3</span></td>
+                        <td>SoulMaster_01</td>
+                        <td style="color: #ff99cc;">Clear Sky Hammer</td>
+                        <td>Lv. 89 (Spirit Douluo)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <section class="section" style="background: rgba(5,5,10,0.4);" id="encyclopedia">
-        <h2 class="section-title">Martial Soul <span>Encyclopedia</span></h2>
-        <div class="section-subtitle">Explore types of spirit essences</div>
-        <div class="grid">
-            <div class="card">
-                <span class="card-icon">🐰</span>
-                <div class="card-title">Soft Bone Rabbit</div>
-                <div class="card-desc">Xiao Wu ගේ මුල්ම Martial Soul එකයි. අතිශය වේගවත් ශරීර චලනයන් සහ ප්‍රහාරක බලයක් හිමිකර දෙයි.</div>
-            </div>
-            <div class="card">
-                <span class="card-icon">🔨</span>
-                <div class="card-title">Clear Sky Hammer</div>
-                <div class="card-desc">Soul Land ලෝකයේ තේජාන්විතම සහ ප්‍රබලම ප්‍රහාරක ආයුධ වර්ගයේ Martial Soul එකක් ලෙස සැලකේ.</div>
-            </div>
-            <div class="card">
-                <span class="card-icon">🌿</span>
-                <div class="card-title">Blue Silver Grass</div>
-                <div class="card-desc">පාලනය කිරීමේ (Control System) හැකියාව ඉහළින්ම ඇති, සතුරන් මෙල්ල කිරීමට යොදාගන්නා ශාකමය ආත්මයකි.</div>
-            </div>
+    <section class="section" style="background: rgba(5,5,10,0.3);" id="support">
+        <h2 class="section-title">Emergency <span>Hub Support</span></h2>
+        <div class="section-subtitle">Get direct human help from the realm master</div>
+        <div class="support-box">
+            <div class="support-title">උදව්වක් අවශ්‍යද, ස්වාමිනි?</div>
+            <div class="support-desc">බොට් රන් කිරීමේදී හෝ සෙටප් කිරීමේදී මොනවා හරි ගැටලුවක් ආවොත්, අපේ නිල වට්ස්ඇප් සපෝර්ට් ගෲප් එකට එකතු වෙලා කෙලින්ම මාව සම්බන්ධ කරගන්න පුළුවන්.</div>
+            <a href="https://chat.whatsapp.com/KHoZiXdYKeH1zYiSKDiDk3?s=cl&p=a&mlu=2" target="_blank" class="support-btn">
+                <span>JOIN WHATSAPP SUPPORT HUB</span>
+            </a>
         </div>
     </section>
 
@@ -348,7 +408,8 @@
     </div>
 
     <footer>
-        &copy; 2026 XIAO WU MD. Crafted by B4K GAMING & adaptive AI. All Rights Reserved.
+        <div class="liyo-credit">Crafted by <span>LIYO 🇱🇰</span></div>
+        &copy; 2026 XIAO WU MD. Engineered for global spirit masters. All Rights Reserved.
     </footer>
 
     <script>
@@ -398,7 +459,6 @@
             bindBtn.disabled = true;
             progCont.style.display = "block";
             percText.style.display = "block";
-            
             diag.innerText = "\"Gathering Soul Power... Gathering Spirit Rings... 💫\"";
 
             let width = 0;
@@ -419,12 +479,11 @@
                     width += 1;
                     progBar.style.width = width + "%";
                     percText.innerText = width + "%";
-                    
                     if(width == 50) {
                         diag.innerText = "\"Awakening Martial Soul... Connecting to WhatsApp Network... ⚡\"";
                     }
                 }
-            }, 40);
+            }, 35);
         }
 
         function copyCode() {
@@ -460,6 +519,7 @@
             }
         }
 
+        /* ✨ පසුබිමේ පාවෙන තරු ලොජික් එක */
         const canvas = document.getElementById('particles-js');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -469,16 +529,16 @@
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedX = Math.random() * 0.8 - 0.4;
+                this.speedY = Math.random() * 0.8 - 0.4;
             }
             update() {
                 this.x += this.speedX; this.y += this.speedY;
-                if (this.size > 0.2) this.size -= 0.01;
+                if (this.size > 0.2) this.size -= 0.008;
             }
             draw() {
-                ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
+                ctx.fillStyle = 'rgba(255, 0, 127, 0.55)';
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
@@ -490,7 +550,7 @@
         }
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (particles.length < 40) particles.push(new Particle());
+            if (particles.length < 50) particles.push(new Particle());
             handleParticles(); requestAnimationFrame(animate);
         }
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
