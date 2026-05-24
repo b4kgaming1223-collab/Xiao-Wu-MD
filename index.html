@@ -16,6 +16,7 @@
             background: #030305;
             color: #fff;
             overflow-x: hidden;
+            padding-bottom: 90px; /* පල්ලෙහායින් එන මියුසික් බාර් එකට ඉඩ තැබීමට */
         }
 
         /* 🎬 පසුබිම් වීඩියෝව */
@@ -25,7 +26,7 @@
             min-width: 100%; min-height: 100%;
             z-index: -2;
             object-fit: cover;
-            opacity: 0.25; /* වීඩියෝ එක පැහැදිලිව පේන්න opacity එක පොඩ්ඩක් වැඩි කළා */
+            opacity: 0.3; /* වීඩියෝ එක ලස්සනට පේන්න Opacity එක හැදුවා */
         }
 
         /* ✨ පාවෙන තරු සිස්ටම් එක */
@@ -70,7 +71,6 @@
         .hero-title span { color: #ff007f; }
         .hero-desc { color: #aaa; font-size: 15px; margin-bottom: 35px; line-height: 1.6; }
         
-        /* 🔥 දිලිසෙන ප්‍රධාන බටන් එක */
         .main-btn {
             background: linear-gradient(135deg, #ff007f, #ff00ff);
             color: white; border: none; padding: 18px 40px;
@@ -98,7 +98,7 @@
         }
         .video-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* ⚔️ Spirit Arena Leaderboard Section */
+        /* ⚔️ Leaderboard Section */
         .leaderboard-table {
             max-width: 700px; margin: 0 auto; width: 100%;
             background: rgba(10, 10, 20, 0.6); backdrop-filter: blur(10px);
@@ -123,7 +123,7 @@
         .card-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: #fff; margin-bottom: 10px; }
         .card-desc { color: #888; font-size: 13px; line-height: 1.5; }
 
-        /* 📟 🔮 POPUP MODAL */
+        /* 📟 🔮 POPUP MODAL (Pairing කොටස) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px);
@@ -181,13 +181,35 @@
         .code-container { margin-top: 25px; padding: 20px; background: rgba(0, 0, 0, 0.7); border: 2px dashed #ff007f; border-radius: 15px; display: none; }
         .pairing-code { font-size: 28px; font-weight: 900; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #ff007f; font-family: 'Orbitron', sans-serif; }
 
+        /* 🔊 🎧 ප්‍රීමියම් පහළ මියුසික් පාලක බාර් එක (Audio Control Bar) */
+        .audio-player-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(15px);
+            border-top: 2px solid rgba(255, 0, 127, 0.4);
+            padding: 15px 8%; display: flex; align-items: center; justify-content: space-between;
+            z-index: 999; box-shadow: 0 -5px 25px rgba(255, 0, 127, 0.2);
+        }
+        .audio-info { display: flex; align-items: center; gap: 15px; }
+        .audio-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff007f; object-fit: cover; }
+        .audio-text h4 { font-size: 14px; font-family: 'Orbitron', sans-serif; color: #fff; letter-spacing: 1px; }
+        .audio-text p { font-size: 11px; color: #ff99cc; }
+        
+        .audio-controls-right { display: flex; align-items: center; gap: 20px; width: 40%; max-width: 300px; justify-content: flex-end; }
+        .mute-btn {
+            background: #ff007f; color: white; border: none; padding: 8px 18px;
+            border-radius: 30px; font-weight: bold; font-family: 'Orbitron', sans-serif;
+            font-size: 11px; cursor: pointer; box-shadow: 0 0 10px rgba(255, 0, 127, 0.4); transition: 0.3s;
+        }
+        .mute-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #ff007f; }
+        .volume-slider { width: 60%; accent-color: #ff007f; cursor: pointer; background: rgba(255,255,255,0.1); height: 5px; border-radius: 5px; }
+
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
         footer { text-align: center; padding: 30px; font-size: 12px; color: #444; border-top: 1px solid rgba(255, 255, 255, 0.02); }
     </style>
 </head>
 <body>
 
-    <video loop playsinline autoplay muted class="bg-video">
+    <video loop playsinline class="bg-video" id="bgVideo">
         <source src="https://github.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/raw/refs/heads/main/VID-20260505-WA0004.mp4" type="video/mp4">
     </video>
 
@@ -285,17 +307,13 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box" id="modalBox">
             <span class="close-modal" onclick="closePairModal()">&times;</span>
-            
             <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" alt="Xiao Wu Mini" class="modal-logo">
-            
             <h2>SPIRIT BIND</h2>
-            
             <div class="dialogue-box" id="dialogue">"Welcome, Spirit Master! Connect your essence to XIAO WU MD..."</div>
 
             <div style="text-align: left;">
                 <label style="font-size: 13px; color: #ccc; margin-left: 5px;">Enter Spirit Number:</label>
                 <input type="text" id="phone" value="+94" placeholder="+947XXXXXXXX">
-                
                 <button class="submit-btn" id="bindBtn" onclick="startSpiritBind()">
                     <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="btn-icon-mini">
                     <span>START CONNECTION</span>
@@ -315,11 +333,26 @@
         </div>
     </div>
 
+    <div class="audio-player-bar">
+        <div class="audio-info">
+            <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="audio-logo">
+            <div class="audio-text">
+                <h4>XIAO WU BACKGROUND OST</h4>
+                <p id="audioStatus">Click anywhere to start Music 🎧</p>
+            </div>
+        </div>
+        <div class="audio-controls-right">
+            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">Mute</button>
+            <input type="range" class="volume-slider" id="volSlider" min="0" max="1" step="0.05" value="0.4" oninput="changeVolume(this.value)">
+        </div>
+    </div>
+
     <footer>
         &copy; 2026 XIAO WU MD. Crafted by B4K GAMING & adaptive AI. All Rights Reserved.
     </footer>
 
     <script>
+        var video = document.getElementById('bgVideo');
         var overlay = document.getElementById('modalOverlay');
         var modalBox = document.getElementById('modalBox');
         var diag = document.getElementById('dialogue');
@@ -328,6 +361,18 @@
         var percText = document.getElementById('percText');
         var codeBox = document.getElementById('codeBox');
         var bindBtn = document.getElementById('bindBtn');
+        var audioStatus = document.getElementById('audioStatus');
+        var muteBtn = document.getElementById('muteBtn');
+        var volSlider = document.getElementById('volSlider');
+
+        // බ්‍රවුසර් ආරක්ෂණ නීති නිසා සයිට් එකේ ඕනෑම තැනක එක පාරක් ක්ලික් කළ ගමන් සද්දේ ලස්සනට ප්ලේ වෙන්න පටන් ගන්නවා!
+        document.body.addEventListener('click', function() {
+            video.muted = false;
+            video.volume = volSlider.value;
+            video.play().then(() => {
+                audioStatus.innerText = "Playing Soul Land Essence 🎵";
+            }).catch(e => console.log(e));
+        }, { once: true });
 
         function openPairModal() {
             overlay.style.display = 'flex';
@@ -336,11 +381,6 @@
                 modalBox.style.transform = 'scale(1)';
             }, 10);
         }
-
-        document.body.addEventListener('click', function() {
-            var video = document.querySelector('.bg-video');
-            if(video) { video.play().catch(e => console.log(e)); }
-        }, { once: true });
 
         function closePairModal() {
             overlay.style.opacity = '0';
@@ -395,7 +435,34 @@
             });
         }
 
-        // ✨ Vanilla JS Particles Engine
+        // 🔊 සද්දේ පාලනය කරන Functions
+        function toggleMute() {
+            video.muted = !video.muted;
+            if(video.muted) {
+                muteBtn.innerText = "Unmute";
+                muteBtn.style.background = "#555";
+                audioStatus.innerText = "Music Muted 🔇";
+            } else {
+                muteBtn.innerText = "Mute";
+                muteBtn.style.background = "#ff007f";
+                audioStatus.innerText = "Playing Soul Land Essence 🎵";
+                video.play();
+            }
+        }
+
+        function changeVolume(v) {
+            video.volume = v;
+            if(v == 0) {
+                audioStatus.innerText = "Music Muted 🔇";
+            } else {
+                video.muted = false;
+                muteBtn.innerText = "Mute";
+                muteBtn.style.background = "#ff007f";
+                audioStatus.innerText = "Volume: " + Math.round(v * 100) + "% 🔊";
+            }
+        }
+
+        // ✨ පාවෙන තරු ඇනිමේෂන් Engine එක
         const canvas = document.getElementById('particles-js');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
