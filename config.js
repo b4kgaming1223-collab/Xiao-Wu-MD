@@ -1,7 +1,7 @@
 const config = {
     botName: "XIAO WU MD",
     ownerName: "LIYO",
-    ownerNumber: "94779702531", // ඔයාගේ වට්ස්ඇප් නම්බර් එක මෙතනට දාන්න ලියෝ
+    ownerNumber: "94740237746", // ඔයාගේ වට්ස්ඇප් නම්බර් එක මෙතනට දාන්න ලියෝ
     mode: "public",
     
     // 🧠 Xiao Wu's AI Engine Instructions (System Prompt)
