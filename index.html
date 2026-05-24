@@ -3,36 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XIAO WU MD - ULTIMATE EXPERIENCE</title>
+    <title>XIAO WU MD - OFFICIAL SOUL HUB</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* 🎨 සාමාන්‍ය සැකසුම් (Global Styles) */
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: #050505;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
+            background: #030305;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        /* 🎬 Background Video */
+        /* 🎬 පසුබිම් වීඩියෝව */
         .bg-video {
             position: fixed;
             right: 0; bottom: 0;
             min-width: 100%; min-height: 100%;
             z-index: -2;
             object-fit: cover;
-            opacity: 0.35;
+            opacity: 0.25; /* වීඩියෝ එක පැහැදිලිව පේන්න opacity එක පොඩ්ඩක් වැඩි කළා */
         }
 
-        /* ✨ Interactive Particles Canvas */
+        /* ✨ පාවෙන තරු සිස්ටම් එක */
         #particles-js {
             position: fixed;
             top: 0; left: 0;
@@ -41,198 +37,291 @@
             pointer-events: none;
         }
 
-        /* 🏯 Main UI Box */
-        .container {
-            background: rgba(10, 10, 15, 0.85);
-            padding: 40px 30px;
-            border-radius: 30px;
-            backdrop-filter: blur(15px);
+        /* 🧭 උඩ තියෙන මෙනු බාර් එක (Navigation Bar) */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 20px 8%;
+            background: rgba(5, 5, 10, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; border-bottom: 1px solid rgba(255, 0, 127, 0.2);
+        }
+        .logo { font-family: 'Cinzel', serif; font-size: 24px; color: #fff; text-shadow: 0 0 10px #ff007f; text-decoration: none; }
+        .nav-links { display: flex; list-style: none; gap: 30px; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 14px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
+
+        /* 👑 Hero Section (ප්‍රධාන පෙනුම) */
+        .hero {
+            min-height: 100vh; padding: 0 8%;
+            display: flex; align-items: center; justify-content: space-between; gap: 50px;
+            padding-top: 100px;
+        }
+        .hero-content { max-width: 600px; }
+        .live-status {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255, 0, 127, 0.1); border: 1px solid #ff007f;
+            padding: 6px 15px; border-radius: 20px; font-size: 12px; color: #ff99cc;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
+        }
+        .status-dot { width: 8px; height: 8px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66; animation: pulse 1.5s infinite; }
+        .hero-title { font-family: 'Cinzel', serif; font-size: 55px; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255, 0, 127, 0.5); }
+        .hero-title span { color: #ff007f; }
+        .hero-desc { color: #aaa; font-size: 15px; margin-bottom: 35px; line-height: 1.6; }
+        
+        /* 🔥 දිලිසෙන ප්‍රධාන බටන් එක */
+        .main-btn {
+            background: linear-gradient(135deg, #ff007f, #ff00ff);
+            color: white; border: none; padding: 18px 40px;
+            font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: bold;
+            border-radius: 50px; cursor: pointer; letter-spacing: 2px;
+            box-shadow: 0 5px 25px rgba(255, 0, 127, 0.4); transition: 0.4s;
+        }
+        .main-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 35px rgba(255, 0, 127, 0.8); }
+
+        .hero-img-container { position: relative; }
+        .hero-img { width: 350px; height: 350px; border-radius: 50%; object-fit: cover; border: 4px solid #ff007f; box-shadow: 0 0 50px rgba(255, 0, 127, 0.5); }
+
+        /* 📺 YouTube Section */
+        .section { padding: 80px 8%; text-align: center; }
+        .section-title { font-family: 'Cinzel', serif; font-size: 36px; margin-bottom: 15px; letter-spacing: 2px; }
+        .section-title span { color: #ff007f; }
+        .section-subtitle { color: #777; font-size: 14px; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 3px; }
+        
+        .video-container {
+            max-width: 850px; margin: 0 auto;
+            border-radius: 20px; overflow: hidden;
             border: 2px solid rgba(255, 0, 127, 0.3);
-            box-shadow: 0 0 40px rgba(255, 0, 127, 0.2);
-            max-width: 440px; width: 90%;
-            text-align: center;
-            z-index: 10;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.15);
+            aspect-ratio: 16/9; background: #000;
+        }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* ⚔️ Spirit Arena Leaderboard Section */
+        .leaderboard-table {
+            max-width: 700px; margin: 0 auto; width: 100%;
+            background: rgba(10, 10, 20, 0.6); backdrop-filter: blur(10px);
+            border-radius: 20px; border: 1px solid rgba(255, 0, 127, 0.2);
+            border-collapse: collapse; overflow: hidden;
+        }
+        .leaderboard-table th, .leaderboard-table td { padding: 15px 25px; text-align: left; }
+        .leaderboard-table th { background: rgba(255, 0, 127, 0.15); font-family: 'Orbitron', sans-serif; color: #ff3399; font-size: 14px; letter-spacing: 1px; }
+        .leaderboard-table tr { border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s; }
+        .leaderboard-table tr:hover { background: rgba(255, 0, 127, 0.05); }
+        .rank-badge { background: #ff007f; padding: 3px 10px; border-radius: 5px; font-weight: bold; font-family: 'Orbitron', sans-serif; font-size: 12px; }
+        .user-soul { font-size: 12px; color: #ff99cc; font-style: italic; }
+
+        /* 📖 Encyclopedia Section */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+        .card {
+            background: rgba(15, 15, 25, 0.7); border: 1px solid rgba(255, 0, 127, 0.15);
+            padding: 30px 20px; border-radius: 20px; transition: 0.4s; text-align: left;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #ff007f; box-shadow: 0 10px 25px rgba(255, 0, 127, 0.2); }
+        .card-icon { font-size: 35px; margin-bottom: 15px; display: inline-block; }
+        .card-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: #fff; margin-bottom: 10px; }
+        .card-desc { color: #888; font-size: 13px; line-height: 1.5; }
+
+        /* 📟 🔮 POPUP MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .modal-box {
+            background: rgba(10, 10, 15, 0.95); padding: 40px 30px;
+            border-radius: 30px; border: 2px solid rgba(255, 0, 127, 0.4);
+            box-shadow: 0 0 50px rgba(255, 0, 127, 0.3);
+            max-width: 440px; width: 90%; text-align: center; position: relative;
+            transform: scale(0.8); transition: transform 0.4s ease;
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 20px;
+            font-size: 30px; color: #aaa; cursor: pointer; transition: 0.3s;
+        }
+        .close-modal:hover { color: #ff007f; }
+
+        .modal-logo {
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            border: 3px solid #ff007f; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
+            margin-bottom: 15px;
         }
 
-        /* 🐰 Xiao Wu Profile Photo */
-        .bot-logo {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #ff007f;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.7);
-            margin-bottom: 10px;
-            transition: 0.5s;
-        }
-
-        /* 💬 Dialogue Bubble */
         .dialogue-box {
-            background: rgba(255, 0, 127, 0.15);
-            border: 1px solid #ff007f;
-            border-radius: 15px;
-            padding: 12px 18px;
-            font-size: 14px;
-            color: #ffccff;
-            margin-bottom: 25px;
-            font-style: italic;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.4;
-            box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.2);
-            animation: fadeIn 0.5s ease-in;
+            background: rgba(255, 0, 127, 0.15); border: 1px solid #ff007f;
+            border-radius: 15px; padding: 12px 18px; font-size: 13px; color: #ffccff;
+            margin-bottom: 25px; font-style: italic; min-height: 50px;
+            display: flex; align-items: center; justify-content: center; line-height: 1.4;
         }
-
-        /* 🌟 XIAO WU Glowing Title */
-        h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 38px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            color: #fff;
-            text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 40px #ff007f;
-            animation: glowPulse 2s infinite alternate;
-        }
-
-        @keyframes glowPulse {
-            from { text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f; }
-            to { text-shadow: 0 0 15px #fff, 0 0 30px #ff00ff, 0 0 50px #ff00ff; }
-        }
-
-        .subtitle { font-size: 11px; color: #ff99cc; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
-
+        .modal-box h2 { font-family: 'Cinzel', serif; font-size: 32px; text-shadow: 0 0 15px #ff007f; margin-bottom: 25px; }
         input[type="text"] {
-            width: 100%; padding: 16px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 0, 127, 0.3);
-            border-radius: 15px;
-            color: white; font-size: 16px;
-            text-align: center; outline: none; transition: 0.3s;
+            width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 0, 127, 0.3); border-radius: 15px;
+            color: white; font-size: 16px; text-align: center; outline: none; transition: 0.3s;
         }
         input[type="text"]:focus { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
-
-        /* ⚔️ ULTIMATE SPIRIT BIND BUTTON ⚔️ */
+        
         .submit-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #ff007f, #ff00ff);
-            color: white; border: none;
-            padding: 15px 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px; font-weight: 700;
-            border-radius: 18px; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.5);
-            margin-top: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-            transition: 0.4s;
-            letter-spacing: 2px;
+            width: 100%; background: linear-gradient(135deg, #ff007f, #ff00ff);
+            color: white; border: none; padding: 15px;
+            font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: bold;
+            border-radius: 15px; cursor: pointer; margin-top: 20px; letter-spacing: 2px;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
         }
-        .submit-btn:hover { transform: scale(1.03); box-shadow: 0 8px 25px rgba(255, 0, 127, 0.8); }
-        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 0, 127, 0.6); }
 
-        .btn-icon {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 0 10px white;
-            transition: 0.6s;
-            object-fit: cover;
-        }
-        .submit-btn:hover .btn-icon { transform: rotate(360deg); }
+        .btn-icon-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
 
-        /* 📊 Neon Progress Bar & Percentage */
-        .progress-container {
-            width: 100%; height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px; margin-top: 25px;
-            display: none; position: relative; overflow: hidden;
-        }
-        .progress-bar {
-            width: 0%; height: 100%;
-            background: #ff007f;
-            box-shadow: 0 0 15px #ff007f, 0 0 30px #ff007f;
-            transition: width 0.05s linear;
-        }
-        /* 🔢 ඔන්න Neon විදිහට ඉලක්කම් පේන කොටස හැදුවා */
-        .percentage-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            color: #ff007f;
-            text-shadow: 0 0 10px #ff007f;
-            margin-top: 15px;
-            display: none;
-            font-weight: bold;
-        }
+        .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; margin-top: 25px; display: none; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: #ff007f; box-shadow: 0 0 15px #ff007f; transition: width 0.05s linear; }
+        .percentage-text { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #ff007f; text-shadow: 0 0 10px #ff007f; margin-top: 15px; display: none; font-weight: bold; }
+        
+        .code-container { margin-top: 25px; padding: 20px; background: rgba(0, 0, 0, 0.7); border: 2px dashed #ff007f; border-radius: 15px; display: none; }
+        .pairing-code { font-size: 28px; font-weight: 900; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #ff007f; font-family: 'Orbitron', sans-serif; }
 
-        /* 📟 Code Container */
-        .code-container {
-            margin-top: 25px; padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px dashed #ff007f;
-            border-radius: 15px; display: none;
-            animation: slideUp 0.5s ease-out;
-        }
-        .pairing-code { font-size: 28px; font-weight: 900; letter-spacing: 5px; color: #fff; text-shadow: 0 0 10px #ff007f; }
-
-        /* 🔊 Audio Controls */
-        .audio-controls {
-            margin-top: 30px; background: rgba(255, 255, 255, 0.05);
-            padding: 12px 20px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid rgba(255, 0, 127, 0.2);
-        }
-        .mute-btn { background: #ff007f; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .volume-slider { width: 60%; accent-color: #ff007f; cursor: pointer; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        footer { text-align: center; padding: 30px; font-size: 12px; color: #444; border-top: 1px solid rgba(255, 255, 255, 0.02); }
     </style>
 </head>
 <body>
 
-    <video loop playsinline class="bg-video" id="bgVideo">
+    <video loop playsinline autoplay muted class="bg-video">
         <source src="https://github.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/raw/refs/heads/main/VID-20260505-WA0004.mp4" type="video/mp4">
     </video>
 
     <canvas id="particles-js"></canvas>
 
-    <div class="container">
-        <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" id="mainLogo" alt="Xiao Wu" class="bot-logo">
+    <header>
+        <a href="#" class="logo">XIAO WU MD</a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#videos">Episodes</a></li>
+            <li><a href="#arena">Arena</a></li>
+            <li><a href="#encyclopedia">Encyclopedia</a></li>
+        </ul>
+    </header>
 
-        <div class="dialogue-box" id="dialogue">"Welcome, Spirit Master! Connect your essence to XIAO WU MD..."</div>
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="live-status">
+                <span class="status-dot"></span> Xiao Wu Live Status: Active
+            </div>
+            <h1 class="hero-title">The Ultimate <span>Soul Land</span> WhatsApp Bot Experience</h1>
+            <p class="hero-desc">සාමාන්‍ය බොට්ලාගේ සීමාවන්ගෙන් මිදෙන්න! Soul Land ලෝකයේ බලගතුම Martial Souls, Spirit Rings සිස්ටම්ස් සමඟින් ඔබේ වට්ස්ඇප් ගිණුමට Xiao Wu ගේ ජීවය ඇතුල් කරන්න.</p>
+            <button class="main-btn" onclick="openPairModal()">CONNECT SPIRIT BIND</button>
+        </div>
+        <div class="hero-img-container">
+            <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" alt="Xiao Wu" class="hero-img">
+        </div>
+    </section>
 
-        <h1>XIAO WU</h1>
-        <div class="subtitle">Ultimate WhatsApp Spirit</div>
+    <section class="section" style="background: rgba(5,5,10,0.4);" id="videos">
+        <h2 class="section-title">Soul Land <span>Official Episodes</span></h2>
+        <div class="section-subtitle">Watch directly from the spirit world Hub</div>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/videoseries?list=PLMX26aiIvX5pT_M7m8ZpXRE67V_vY7_Z7" allowfullscreen></iframe>
+        </div>
+    </section>
 
-        <div style="text-align: left;">
-            <label style="font-size: 13px; color: #ccc; margin-left: 5px;">Enter Spirit Number:</label>
-            <input type="text" id="phone" value="+94" placeholder="+947XXXXXXXX">
+    <section class="section" id="arena">
+        <h2 class="section-title">Spirit Arena <span>Leaderboard</span></h2>
+        <div class="section-subtitle">Top Spirit Masters of Xiao Wu MD</div>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Spirit Master</th>
+                    <th>Martial Soul</th>
+                    <th>Soul Power</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="rank-badge">Rank 1</span></td>
+                    <td>Tang San (Owner)</td>
+                    <td class="user-soul">Blue Silver Emperor</td>
+                    <td style="color: #ff007f; font-weight: bold;">Lv. 100 (God)</td>
+                </tr>
+                <tr>
+                    <td><span class="rank-badge" style="background: #ff00ff;">Rank 2</span></td>
+                    <td>B4K GAMING</td>
+                    <td class="user-soul">Soft Bone Rabbit</td>
+                    <td style="color: #ff00ff;">Lv. 95 (Hyper Douluo)</td>
+                </tr>
+                <tr>
+                    <td><span class="rank-badge" style="background: #9900ff;">Rank 3</span></td>
+                    <td>SoulMaster_01</td>
+                    <td class="user-soul">Clear Sky Hammer</td>
+                    <td>Lv. 89 (Spirit Douluo)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section" style="background: rgba(5,5,10,0.4);" id="encyclopedia">
+        <h2 class="section-title">Martial Soul <span>Encyclopedia</span></h2>
+        <div class="section-subtitle">Explore types of spirit essences</div>
+        <div class="grid">
+            <div class="card">
+                <span class="card-icon">🐰</span>
+                <div class="card-title">Soft Bone Rabbit</div>
+                <div class="card-desc">Xiao Wu ගේ මුල්ම Martial Soul එකයි. අතිශය වේගවත් ශරීර චලනයන් සහ ප්‍රහාරක බලයක් හිමිකර දෙයි.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">🔨</span>
+                <div class="card-title">Clear Sky Hammer</div>
+                <div class="card-desc">Soul Land ලෝකයේ තේජාන්විතම සහ ප්‍රබලම ප්‍රහාරක ආයුධ වර්ගයේ Martial Soul එකක් ලෙස සැලකේ.</div>
+            </div>
+            <div class="card">
+                <span class="card-icon">🌿</span>
+                <div class="card-title">Blue Silver Grass</div>
+                <div class="card-desc">පාලනය කිරීමේ (Control System) හැකියාව ඉහළින්ම ඇති, සතුරන් මෙල්ල කිරීමට යොදාගන්නා ශාකමය ආත්මයකි.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" id="modalBox">
+            <span class="close-modal" onclick="closePairModal()">&times;</span>
             
-            <button class="submit-btn" id="bindBtn" onclick="startSpiritBind()">
-                <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="btn-icon" id="btnIcon">
-                <span>SPIRIT BIND...</span>
-            </button>
-        </div>
+            <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" alt="Xiao Wu Mini" class="modal-logo">
+            
+            <h2>SPIRIT BIND</h2>
+            
+            <div class="dialogue-box" id="dialogue">"Welcome, Spirit Master! Connect your essence to XIAO WU MD..."</div>
 
-        <div class="progress-container" id="progCont">
-            <div class="progress-bar" id="progBar"></div>
-        </div>
-        <div class="percentage-text" id="percText">0%</div>
+            <div style="text-align: left;">
+                <label style="font-size: 13px; color: #ccc; margin-left: 5px;">Enter Spirit Number:</label>
+                <input type="text" id="phone" value="+94" placeholder="+947XXXXXXXX">
+                
+                <button class="submit-btn" id="bindBtn" onclick="startSpiritBind()">
+                    <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="btn-icon-mini">
+                    <span>START CONNECTION</span>
+                </button>
+            </div>
 
-        <div class="code-container" id="codeBox">
-            <div style="font-size: 11px; color: #ff007f; margin-bottom: 5px;">SOUL CONNECTION ESTABLISHED</div>
-            <span class="pairing-code" id="pairCode">WUSH-7A9B</span><br><br>
-            <button class="mute-btn" style="width: 100%;" onclick="copyCode()">COPY SOUL BIND</button>
-        </div>
+            <div class="progress-container" id="progCont">
+                <div class="progress-bar" id="progBar"></div>
+            </div>
+            <div class="percentage-text" id="percText">0%</div>
 
-        <div class="audio-controls">
-            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">Mute</button>
-            <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="0.5" oninput="changeVolume(this.value)">
+            <div class="code-container" id="codeBox">
+                <div style="font-size: 11px; color: #ff007f; margin-bottom: 5px;">SOUL CONNECTION ESTABLISHED</div>
+                <span class="pairing-code" id="pairCode">WUSH-7A9B</span><br><br>
+                <button class="submit-btn" style="background: #ff007f; margin-top: 10px; justify-content: center;" onclick="copyCode()">COPY SOUL BIND</button>
+            </div>
         </div>
     </div>
 
+    <footer>
+        &copy; 2026 XIAO WU MD. Crafted by B4K GAMING & adaptive AI. All Rights Reserved.
+    </footer>
+
     <script>
-        var video = document.getElementById('bgVideo');
+        var overlay = document.getElementById('modalOverlay');
+        var modalBox = document.getElementById('modalBox');
         var diag = document.getElementById('dialogue');
         var progCont = document.getElementById('progCont');
         var progBar = document.getElementById('progBar');
@@ -240,12 +329,25 @@
         var codeBox = document.getElementById('codeBox');
         var bindBtn = document.getElementById('bindBtn');
 
-        document.addEventListener('click', function() {
-            video.muted = false; video.volume = 0.5;
-            video.play().catch(e => console.log(e));
+        function openPairModal() {
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                modalBox.style.transform = 'scale(1)';
+            }, 10);
+        }
+
+        document.body.addEventListener('click', function() {
+            var video = document.querySelector('.bg-video');
+            if(video) { video.play().catch(e => console.log(e)); }
         }, { once: true });
 
-        // ⚔️ Spirit Bind සහ 100% Loading සිස්ටම් එක
+        function closePairModal() {
+            overlay.style.opacity = '0';
+            modalBox.style.transform = 'scale(0.8)';
+            setTimeout(() => { overlay.style.display = 'none'; }, 400);
+        }
+
         function startSpiritBind() {
             var phone = document.getElementById('phone').value.trim();
             if (phone === "" || phone === "+94") {
@@ -256,7 +358,7 @@
             bindBtn.style.opacity = "0.5";
             bindBtn.disabled = true;
             progCont.style.display = "block";
-            percText.style.display = "block"; // ඉලක්කම පෙන්වන්න පටන් ගන්නවා
+            percText.style.display = "block";
             
             diag.innerText = "\"Gathering Soul Power... Gathering Spirit Rings... 💫\"";
 
@@ -264,8 +366,7 @@
             let barInterval = setInterval(function() {
                 if (width >= 100) {
                     clearInterval(barInterval);
-                    percText.innerText = "100%"; // අන්තිමටම 100% වදිනවා
-                    
+                    percText.innerText = "100%";
                     diag.innerText = "\"Injecting Xiao Wu's Spirit Energy... Please wait... 🔥\"";
 
                     setTimeout(() => {
@@ -273,18 +374,18 @@
                         codeBox.style.display = "block";
                         bindBtn.style.display = "none";
                         progCont.style.display = "none";
-                        percText.style.display = "none"; // කෝඩ් එක ආවාම ඉලක්කම අයින් කරනවා
+                        percText.style.display = "none";
                     }, 1200);
                 } else {
-                    width += 1; // 1න් 1 ලස්සනට ඉලක්කම් ටික වැඩිවෙන්න හැදුවා
+                    width += 1;
                     progBar.style.width = width + "%";
-                    percText.innerText = width + "%"; // ඉලක්කම අප්ඩේට් වෙනවා
+                    percText.innerText = width + "%";
                     
                     if(width == 50) {
                         diag.innerText = "\"Awakening Martial Soul... Connecting to WhatsApp Network... ⚡\"";
                     }
                 }
-            }, 40); // පිරෙන වේගය වෙනස් කරන්න පුළුවන්
+            }, 40);
         }
 
         function copyCode() {
@@ -293,13 +394,6 @@
                 diag.innerText = "\"Xiao Wu's Promise is copied to your clipboard! 🤝💖\"";
             });
         }
-
-        function toggleMute() {
-            video.muted = !video.muted;
-            document.getElementById('muteBtn').innerText = video.muted ? "Unmute" : "Mute";
-        }
-
-        function changeVolume(v) { video.volume = v; }
 
         // ✨ Vanilla JS Particles Engine
         const canvas = document.getElementById('particles-js');
@@ -320,7 +414,7 @@
                 if (this.size > 0.2) this.size -= 0.01;
             }
             draw() {
-                ctx.fillStyle = 'rgba(255, 0, 127, 0.8)';
+                ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
@@ -332,7 +426,7 @@
         }
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (particles.length < 50) particles.push(new Particle());
+            if (particles.length < 40) particles.push(new Particle());
             handleParticles(); requestAnimationFrame(animate);
         }
         window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
