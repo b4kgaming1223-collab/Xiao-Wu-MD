@@ -1,9 +1,9 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // නිල Google AI පැකේජය
+const { GoogleGenerativeAI } = require('@google/generative-ai'); 
 const config = require('./config');
 
-// Gemini API එක සම්බන්ධ කිරීම (config.js එකේ තියෙන geminiApiKey එක කෙලින්ම කියවයි)
+// config.js එකේ තියෙන API Key එක කියවා නිල වශයෙන් සම්බන්ධ වීම
 const aiKey = config.geminiApiKey || config.apiKey; 
 const genAI = new GoogleGenerativeAI(aiKey);
 
@@ -63,7 +63,7 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // Reaction (🐰) එක මුලින්ම දමයි
+            // Reaction (🐰) එක දමයි
             try {
                 await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
             } catch (e) {
@@ -73,13 +73,15 @@ async function startXiaoWuBot() {
             try {
                 console.log('🔄 Xiao Wu: නිල Google Gemini සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...');
                 
-                // නිල Gemini 1.5 Flash මොඩලය සහ config.js එකේ තියෙන aiSystemPrompt එක සම්බන්ධ කිරීම
+                // නිල SDK එක සඳහා නිවැරදිම සහ ස්ථාවරම මොඩලය (gemini-1.5-flash)
                 const model = genAI.getGenerativeModel({ 
-                    model: "gemini-1.5-flash",
-                    systemInstruction: config.aiSystemPrompt 
+                    model: "gemini-1.5-flash" 
                 });
 
-                const result = await model.generateContent(userPrompt);
+                // Xiao Wu ගේ චරිතය (System Prompt) සහ User ගේ ප්‍රශ්නය එකතු කර නිවැරදිව සර්වර් එකට යැවීම
+                const fullPrompt = `System: ${config.aiSystemPrompt}\n\nUser: ${userPrompt}`;
+
+                const result = await model.generateContent(fullPrompt);
                 const aiReply = result.response.text();
 
                 if (aiReply) {
@@ -91,7 +93,7 @@ async function startXiaoWuBot() {
             } catch (error) {
                 console.log('❌ Gemini API Error:', error.message);
                 await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ නිල API Key එකේ මොකක් හරි අවුලක් තියෙනවා වගේ. config.js එකේ Key එක හරිද කියලා පොඩ්ඩක් බලන්නකෝ... 🥺💗` 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතිවිලි පද්ධතියේ පොඩි අවුලක් ආවා. config.js එකේ API Key එක හරිද කියලා පොඩ්ඩක් බලන්නකෝ... 🥺💗` 
                 }, { quoted: msg });
             }
         }
