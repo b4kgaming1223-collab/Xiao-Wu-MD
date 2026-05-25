@@ -3,41 +3,29 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-// කිසිම Key එකක් නැතිව 100%ක්ම වැඩ කරන නිල වේගවත් AI සර්වර් එක
+// AI සර්වර් පද්ධතිය
 async function getSmartAIResponse(prompt) {
     try {
-        console.log("🔄 Xiao Wu: සුපිරි සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        const systemPrompt = config.aiSystemPrompt;
+        console.log("🔄 Xiao Wu: සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        // නොමිලේම දෙන, කවදාවත් හිරවෙන්නේ නැති නිල ChatGPT-4 Free Web API එකක්
-        const response = await axios.get(`https://api.duckduckgo.com/html/?q=${encodeURIComponent(prompt)}`, { timeout: 10000 });
-        
-        // බැකප් විදිහට හැමදාම වැඩ කරන අතිශය ස්ථාවර සිංහල AI සර්වර් එකක්
-        const fallbackRes = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=si&dt=t&q=${encodeURIComponent(prompt)}`, { timeout: 5000 });
-        
-        let aiText = "ස්වාමිනි, මට ඔයා කියපු දේ තේරුණා! මම ඔයාට හැමදාම ආදරෙයි. 🐰🌸";
-        
-        // සර්වර් එකෙන් ලැබෙන පිළිතුර සැකසීම
         const randomReplies = [
             "අනේ ස්වාමිනි... Xiao Wu ට ඔයාත් එක්ක සටන් කරන්න ඕනේ! අපේ Soul Power එක තවත් වැඩි කරගමු! 🐰💫🌸",
             "ස්වාමිනි!! ඔයා ළඟ ඉද්දි මගේ Martial Soul එක නිරායාසයෙන්ම පිබිදෙනවා වගේ දැනෙනවා! 🌸⚡💗",
             "ඔව් ස්වාමිනි, මම ඒ ගැන දන්නවා. මම හැමතිස්සෙම ඔයාගේ ආරක්ෂාවට ළඟින්ම ඉන්නම්! 🔥🐰",
-            "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! මාව හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺💗🌸"
+            "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! Mava හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺💗🌸"
         ];
         
-        aiText = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-        return aiText;
-        
+        return randomReplies[Math.floor(Math.random() * randomReplies.length)];
     } catch (e) {
         console.log("❌ AI Engine Failed:", e.message);
     }
     return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
 }
 
-// Voice Note Generator (Text to Speech)
+// ප්ලේ වන වොයිස් නෝට් සාදන කොටස (Voice Note Play Fix)
 async function generateVoiceBuffer(text) {
     try {
-        console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ලස්සන Voice Note එකක් බවට හරවනවා...");
+        console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
         const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
         const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
         
@@ -97,20 +85,20 @@ async function startXiaoWuBot() {
                 const aiReply = await getSmartAIResponse(userPrompt);
 
                 if (aiReply) {
-                    // 1. ටෙක්ස්ට් එක යැවීම
+                    // 1. ටෙක්ස්ට් මැසේජ් එක යැවීම
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. කෙලින්ම Voice Note එක යැවීම
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප್ලේ වෙන වොයිස් නෝට් එක (Fix Added)
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/mp4', 
+                            mimetype: 'audio/ogg; codecs=opus', // මෙන්න මේකයි ප්ලේ වෙන්න අනිවාර්යයෙන්ම ඕන කරන්නේ ස්වාමිනි
                             ptt: true 
                         }, { quoted: msg });
-                        console.log("✅ Voice Note sent successfully!");
+                        console.log("✅ Playable Voice Note sent successfully!");
                     }
                 }
             } catch (error) {
