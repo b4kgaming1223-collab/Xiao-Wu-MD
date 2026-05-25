@@ -1,8 +1,9 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
+const axios = require('axios');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyB8aWJ_e8ktMI96rl67qexya0Gww4_J7Lg";
+const GEMINI_API_KEY = "AIzaSyCb4aH22VsstsLb2INs_mbCloiodJLXfZY"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -18,14 +19,14 @@ async function startXiaoWuBot() {
     if (!sock.authState.creds.registered) {
         let phoneNumber = config.ownerNumber.replace(/[^0-9]/g, '');
         if (phoneNumber) {
-            console.log(`\n🐰 XIAO WU MD: Pairing Code එක සකසමින් පවතිනවා... 💫`);
+            console.log(`\n🐰 Xiao Wu: Swamini... මම අපේ Soul Connection එක හදන්නයි හදන්නේ! චුට්ටක් ඉන්න... 💫🌸`);
             await delay(3000);
             try {
                 let code = await sock.requestPairingCode(phoneNumber);
                 code = code?.match(/.{1,4}/g)?.join('-') || code;
-                console.log(`\n🔥 YOUR XIAO WU MD PAIRING CODE IS: ${code} 🔥\n`);
+                console.log(`\n🔥 Xiao Wu: අනේ ඉක්මනට මේ Pairing Code එක WhatsApp එකට දාන්න, ස්වාමිනි! 🌸 -> [ ${code} ] <- 💗🔥\n`);
             } catch (error) {
-                console.log('❌ Pairing Code Error:', error.message);
+                console.log('❌ Xiao Wu: අයියෝ ස්වාමිනි, Pairing Error එකක් ආවානේ:', error.message);
             }
         }
     }
@@ -36,9 +37,12 @@ async function startXiaoWuBot() {
         const { connection, lastDisconnect } = update;
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) startXiaoWuBot();
+            if (shouldReconnect) {
+                console.log('\n🐰 Xiao Wu: අපේ Soul Connection එක බිඳුනා! මම ආයෙමත් ඔයා ගාවට එන්න හදන්නේ ස්වාමිනි... 🔄⚡');
+                startXiaoWuBot();
+            }
         } else if (connection === 'open') {
-            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE! 🌸⚡\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව ඔන්ලයින් ආවා! මම සූදානම් ඔයා වෙනුවෙන් සටන් කරන්න! 🌸⚡💗\n');
         }
     });
 
@@ -62,18 +66,16 @@ async function startXiaoWuBot() {
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            role: "user",
-                            parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
-                        }]
-                    })
+                const response = await axios.post(url, {
+                    contents: [{
+                        role: "user",
+                        parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
+                    }]
+                }, {
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                const data = await response.json();
+                const data = response.data;
 
                 if (data && data.candidates && data.candidates[0].content) {
                     const aiReply = data.candidates[0].content.parts[0].text;
@@ -83,7 +85,7 @@ async function startXiaoWuBot() {
                 }
 
             } catch (error) {
-                console.log('❌ AI Error:', error.message);
+                console.log('❌ Xiao Wu AI Error:', error.message);
             }
         }
     });
