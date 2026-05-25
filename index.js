@@ -2,7 +2,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, f
 const pino = require('pino');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
+const GEMINI_API_KEY = "AIzaSyB8aWJ_e8ktMI96rl67qexya0Gww4_J7Lg";
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
