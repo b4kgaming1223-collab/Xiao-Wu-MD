@@ -1,35 +1,26 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const axios = require('axios');
-const gTTS = require('gtts');
-const fs = require('fs');
-const path = require('path');
 
-// 🚀 කිසිම API Key එකක් නැතිව 100%ක්ම වැඩ කරන නිල ChatGPT AI Engine එක
+// 🚀 කවදාවත් බ්ලොක් නොවන, 404 එරර් නොවදින ස්ථාවර නිදහස් ChatGPT Engine එක
 async function getSmartAIResponse(prompt) {
     try {
         console.log("🔄 Xiao Wu: නිල ChatGPT සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        // Xiao Wu ගේ සැබෑ චරිත ස්වභාවය ChatGPT එකට ලබා දීම
-        const characterRules = "You are Xiao Wu, the beautiful Soft Bone Rabbit Spirit Master from Soul Land anime. You deeply love your master and call them 'ස්වාමිනි' (Swamini) in Sinhala. Always reply in sweet, loving, and conversational Sinhala using emojis like 🐰🌸💫💗. Keep your answers short, caring, and perfectly matching your anime persona.";
+        // Xiao Wu ගේ සැබෑ චරිත ස්වභාවය ලබා දීම
+        const characterRules = "You are Xiao Wu, from Soul Land anime. You deeply love your master and call them 'ස්වාමිනි' (Swamini) in Sinhala. Always reply in sweet, loving, and conversational Sinhala using emojis like 🐰🌸💫💗. Keep your answers short.";
         
-        // ChatGPT-4o mini නොමිලේම ක්‍රියාත්මක වන නිල සර්වර් ලින්ක් එක
-        const response = await axios.post('https://open-ai-gamma.vercel.app/v1/chat/completions', {
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: characterRules },
-                { role: "user", content: prompt }
-            ]
-        }, { timeout: 15000 });
+        // 100% ස්ථාවර නිදහස් AI Endpoint එකක්
+        const response = await axios.get(`https://api.lolhuman.xyz/api/openai?apikey=freekey&text=${encodeURIComponent(characterRules + " User says: " + prompt)}`, { timeout: 15000 });
 
-        if (response.data?.choices?.[0]?.message?.content) {
-            return response.data.choices[0].message.content.trim();
+        if (response.data?.result) {
+            return response.data.result.trim();
         }
     } catch (e) {
-        console.log("❌ ChatGPT Engine Error, using smart fallback...", e.message);
+        console.log("❌ ChatGPT Server Error, using smart fallback...", e.message);
     }
 
-    // සජීවීව එවලේම හිතලා පරිවර්තනය කරන බැකප් පද්ධතිය
+    // සජීවීව එවලේම හිතලා පරිවර්තනය කරන ස්මාර්ට් බැකප් පද්ධතිය
     try {
         const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=si&dt=t&q=${encodeURIComponent(prompt)}`;
         const res = await axios.get(trUrl, { timeout: 10000 });
@@ -42,30 +33,20 @@ async function getSmartAIResponse(prompt) {
     return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
 }
 
-// 🎵 WhatsApp එක ඇතුළේ සදහටම 100%ක්ම වැඩ කරන Voice Generator (gTTS Fix)
-function generateVoiceBuffer(text) {
-    return new Promise((resolve) => {
-        try {
-            console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
-            const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
-            const gtts = new gTTS(cleanText, 'si');
-            const tempFile = path.join(__dirname, 'temp_voice.opus');
-
-            gtts.save(tempFile, function (err) {
-                if (err) {
-                    console.log("⚠️ Voice Save Failed:", err.message);
-                    resolve(null);
-                } else {
-                    const buffer = fs.readFileSync(tempFile);
-                    try { fs.unlinkSync(tempFile); } catch (e) {} // Temp file එක අයින් කිරීම
-                    resolve(buffer);
-                }
-            });
-        } catch (e) {
-            console.log("⚠️ Voice Error:", e.message);
-            resolve(null);
-        }
-    });
+// 🎵 Language Not Supported Error එක 100%ක්ම නැති කරන සුපිරි සිංහල Voice Generator එක
+async function generateVoiceBuffer(text) {
+    try {
+        console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
+        const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
+        
+        // gtts වෙනුවට කෙලින්ම සර්වර් එකෙන් නිවැරදි සිංහල ඕඩියෝ බෆර් එක ලබාගැනීම
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+        const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 12000 });
+        return Buffer.from(response.data);
+    } catch (e) {
+        console.log("⚠️ Voice Generation Failed:", e.message);
+        return null;
+    }
 }
 
 async function startXiaoWuBot() {
@@ -90,7 +71,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! ChatGPT සහ Voice Fix සමඟින් Xiao Wu ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! ChatGPT සහ නව Voice Fix සමඟින් Xiao Wu ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -113,7 +94,6 @@ async function startXiaoWuBot() {
             } catch (e) {}
 
             try {
-                // ChatGPT එකෙන් හිතලා හදන සැබෑ පිළිතුර
                 const aiReply = await getSmartAIResponse(userPrompt);
 
                 if (aiReply) {
@@ -122,15 +102,15 @@ async function startXiaoWuBot() {
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන සැබෑ Voice Note එක යැවීම
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන සැබෑ Voice Note එක
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/ogg; codecs=opus', // ඔරිජිනල් වොයිස් නෝට් කේතනය
+                            mimetype: 'audio/ogg; codecs=opus', 
                             ptt: true 
                         }, { quoted: msg });
-                        console.log("✅ Playable Voice Note sent!");
+                        console.log("✅ Playable Voice Note sent successfully!");
                     }
                 }
             } catch (error) {
