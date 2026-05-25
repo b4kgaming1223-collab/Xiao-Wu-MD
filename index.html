@@ -158,11 +158,8 @@
         .dialogue-box { background: rgba(255, 0, 127, 0.12); border: 1px solid #ff007f; border-radius: 15px; padding: 14px; font-size: 13px; color: #ffccff; margin-bottom: 25px; font-style: italic; min-height: 50px; display: flex; align-items: center; justify-content: center; }
         input[type="text"] { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 0, 127, 0.3); border-radius: 15px; color: white; font-size: 16px; text-align: center; outline: none; transition: 0.3s; }
         input[type="text"]:focus { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
-        
         .submit-btn { width: 100%; background: linear-gradient(135deg, #ff007f, #ff00ff); color: white; border: none; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: bold; border-radius: 15px; cursor: pointer; margin-top: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 0, 127, 0.6); }
-        
-        /* ✨ Xiao Wu ගේ රවුම් ලෝගෝ එක කරකවන්න දාපු Spinning Animation එක */
         .btn-icon-mini { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
         .spin-animation { animation: spinLogo 1.2s linear infinite; }
         @keyframes spinLogo { 100% { transform: rotate(360deg); } }
@@ -308,7 +305,7 @@
                     <tr>
                         <td><span class="ring-badge" style="background: #111; color: #444; border: 1px solid #fff;"></span> කළු පැහැය (Black)</td>
                         <td>අවුරුදු 10,000 - 99,999</td>
-                        <td>Title Douluo มට්ටමේ සටන්කාමීන්ට පමණක් හිමිවන දුර්ලභ බලයකි.</td>
+                        <td>Title Douluo මට්ටමේ සටන්කාමීන්ට පමණක් හිමිවන දුර්ලභ බලයකි.</td>
                     </tr>
                     <tr>
                         <td><span class="ring-badge" style="background: #ff0000; color: #ff0000;"></span> රතු පැහැය (Red)</td>
@@ -418,6 +415,9 @@
     </footer>
 
     <script>
+        // 🚀 ⚠️ වැදගත්ම දේ: මෙතන පල්ලෙහා තියෙන ලින්ක් එක වෙනුවට ඔයාගේ Hugging Face "Direct URL" එක දාන්න!
+        const HF_API_URL = "https://liyowumd-xiao-wu-md.hf.space"; 
+
         var video = document.getElementById('bgVideo');
         var overlay = document.getElementById('modalOverlay');
         var modalBox = document.getElementById('modalBox');
@@ -461,7 +461,6 @@
                 return;
             }
 
-            // 🔄 ලෝගෝ එක කරකවන ඇනිමේෂන් එක ක්‍රියාත්මක කරයි
             btnLogo.classList.add('spin-animation');
             bindBtn.style.opacity = "0.5";
             bindBtn.disabled = true;
@@ -481,10 +480,8 @@
                 }
             }, 45);
 
-            // 🚀 ✨ සුපිරිම රහස: එකම රෙපොසිටරියේ සයිට් එක තියෙන නිසා ලින්ක් එක ඔටෝ ගන්නා ක්‍රමය!
-            const API_URL = window.location.origin + "/start-connection";
-
-            fetch(API_URL, {
+            // Hugging Face එකට කෙලින්ම Data යවනවා
+            fetch(HF_API_URL + "/start-connection", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ number: phone })
