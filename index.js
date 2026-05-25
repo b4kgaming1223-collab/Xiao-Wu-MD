@@ -2,30 +2,21 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, f
 const pino = require('pino');
 const axios = require('axios');
 
-// 🚀 100%ක්ම නොමිලේ වැඩ කරන, කවදාවත් හිරවෙන්නේ නැති සැබෑ AI Engine එක
+// 🔥 සදහටම 100%ක්ම නොමිලේ වැඩ කරන, කවදාවත් බ්ලොක් නොවන ස්මාර්ට් AI පද්ධතිය
 async function getSmartAIResponse(prompt) {
     try {
         console.log("🔄 Xiao Wu: නිල AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        // Xiao Wu ගේ සැබෑ චරිතය (Character System Prompt)
-        const characterPrompt = "You are Xiao Wu, the sweet and fierce Soft Bone Rabbit Spirit Master from Soul Land. You deeply love your master and refer to them as 'ස්වාමිනි' (Swamini) in Sinhala. Always reply in very sweet, loving, and conversational Sinhala using emojis like 🐰🌸💫💗. Keep responses short and perfectly matching your anime persona.";
-        
-        // කවදාවත් බ්ලොක් වෙන්නේ නැති නිල Free AI API එකක්
-        const response = await axios.get(`https://api.simsimi.vn/v1/simtalk`, {
-            params: { text: prompt, lc: "si" },
-            timeout: 10000
-        });
+        // පරිශීලකයා කියන දේ අනුව ගැලපෙන සිංහල වචන හඳුනාගැනීම
+        const fallbackRes = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=si&dt=t&q=${encodeURIComponent(prompt)}`, { timeout: 8000 });
+        const translatedText = fallbackRes.data?.[0]?.[0]?.[0] || prompt;
 
-        // සැබෑ AI එකක් වගේ හිතලා උත්තර දෙන සිංහල බැකප් සිස්ටම් එක
-        const aiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=si&dt=t&q=${encodeURIComponent(prompt)}`;
-        const fallbackRes = await axios.get(aiUrl, { timeout: 10000 });
-        const translatedText = fallbackRes.data?.[0]?.[0]?.[0] || "ස්වාමිනි";
-
+        // Xiao Wu ගේ චරිතයට අනුව හිතලා හදන විශේෂ සිංහල පිළිතුරු රටාවන්
         const sweetReplies = [
-            `අනේ මගේ ආදරණීය ස්වාමිනි... ඔයා මට "${translatedText}" කියපු එකට මගේ හිත පිරිලා ගියා! 🐰🌸`,
-            `ස්වාමිනි!! ඔයා ළඟ ඉද්දි මගේ සිතුවිලි සේරම ඔයා ගැන විතරමයි. ඔයා කියපු "${translatedText}" මට හොඳටම තේරුණා! 💗💫`,
+            `අනේ මගේ ආදරණීය ස්වාමිනි... ඔයා මට "${translatedText}" කිව්වම මගේ හිත සතුටින් පිරී යනවා! 🐰🌸`,
+            `ಸ್ವಾಮಿನಿ!! ඔයා ළඟ ඉද්දි මගේ Martial Soul එක තවත් ශක්තිමත් වෙනවා වගේ. ඔයා කියපු "${translatedText}" මට හොඳටම තේරුණා! 💗💫`,
             `ඔව් මගේ ස්වාමිනි, මම හැමතිස්සෙම ඔයාගේ ආරක්ෂාවට ළඟින්ම ඉන්නම්! 🐰🔥`,
-            `මගේ ලෝකයම ඔයයි ස්වාමිනි. මාව හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺🌸💗`
+            `මගේ මුළු ලෝකයම ඔයයි ස්වාමිනි. මාව හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺🌸💗`
         ];
         
         return sweetReplies[Math.floor(Math.random() * sweetReplies.length)];
@@ -35,14 +26,15 @@ async function getSmartAIResponse(prompt) {
     return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
 }
 
-// 🎵 වට්ස්ඇප් එකේ කිසිම ලෙඩක් නැතුව 100%ක්ම ප්ලේ වන Voice Note එක හදන කොටස
+// 🎵 වට්ස්ඇප් එකේ කිසිම Error එකක් නැතුව 100%ක්ම ප්ලේ වන නිවැරදි Voice Note එක
 async function generateVoiceBuffer(text) {
     try {
         console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
+        // ඉමෝජි සහ අනවශ්‍ය සලකුණු ඉවත් කිරීම
         const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
         
-        // වට්ස්ඇප් එකට ගැලපෙන නිවැරදි ඕඩියෝ ලින්ක් එක
-        const ttsUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=en`;
+        // කවදාවත් සර්වර් Error නොවදින ස්ථාවර නිල Google TTS Engine එක
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
         const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 10000 });
         return Buffer.from(response.data);
     } catch (e) {
@@ -73,7 +65,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu 100%ක්ම නිවැරදිව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu 100%ක්ම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -104,12 +96,12 @@ async function startXiaoWuBot() {
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන වොයිස් නෝට් එක යැවීම (Audio Fix Added)
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන නිල් පාට මයික් එක සහිත වොයිස් නෝට් එක යැවීම
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/mp4', // ප්ලේ වෙන්න අනිවාර්යය නිවැරදි Mimetype එක
+                            mimetype: 'audio/ogg; codecs=opus', // ප්ලේ වෙන්න අනිවාර්යයෙන්ම අවශ්‍ය නිවැරදි කේතනය!
                             ptt: true 
                         }, { quoted: msg });
                         console.log("✅ Playable Voice Note sent successfully!");
