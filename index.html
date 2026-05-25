@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* 🎨 සාමාන්‍ย සැකසුම් (Global Styles) */
+        /* 🎨 සාමාන්‍ය සැකසුම් (Global Styles) */
         * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
@@ -158,9 +158,14 @@
         .dialogue-box { background: rgba(255, 0, 127, 0.12); border: 1px solid #ff007f; border-radius: 15px; padding: 14px; font-size: 13px; color: #ffccff; margin-bottom: 25px; font-style: italic; min-height: 50px; display: flex; align-items: center; justify-content: center; }
         input[type="text"] { width: 100%; padding: 16px; background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 0, 127, 0.3); border-radius: 15px; color: white; font-size: 16px; text-align: center; outline: none; transition: 0.3s; }
         input[type="text"]:focus { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
+        
         .submit-btn { width: 100%; background: linear-gradient(135deg, #ff007f, #ff00ff); color: white; border: none; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: bold; border-radius: 15px; cursor: pointer; margin-top: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 0, 127, 0.6); }
+        
+        /* ✨ Xiao Wu ගේ රවුම් ලෝගෝ එක කරකවන්න දාපු Spinning Animation එක */
         .btn-icon-mini { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
+        .spin-animation { animation: spinLogo 1.2s linear infinite; }
+        @keyframes spinLogo { 100% { transform: rotate(360deg); } }
         
         .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; margin-top: 25px; display: none; overflow: hidden; }
         .progress-bar { width: 0%; height: 100%; background: #ff007f; box-shadow: 0 0 15px #ff007f; transition: width 0.05s linear; }
@@ -303,7 +308,7 @@
                     <tr>
                         <td><span class="ring-badge" style="background: #111; color: #444; border: 1px solid #fff;"></span> කළු පැහැය (Black)</td>
                         <td>අවුරුදු 10,000 - 99,999</td>
-                        <td>Title Douluo මට්ටමේ සටන්කාමීන්ට පමණක් හිමිවන දුර්ලභ බලයකි.</td>
+                        <td>Title Douluo มට්ටමේ සටන්කාමීන්ට පමණක් හිමිවන දුර්ලභ බලයකි.</td>
                     </tr>
                     <tr>
                         <td><span class="ring-badge" style="background: #ff0000; color: #ff0000;"></span> රතු පැහැය (Red)</td>
@@ -375,7 +380,7 @@
                 <label style="font-size: 13px; color: #ccc; margin-left: 5px;">Enter Spirit Number:</label>
                 <input type="text" id="phone" value="+94" placeholder="+947XXXXXXXX">
                 <button class="submit-btn" id="bindBtn" onclick="startSpiritBind()">
-                    <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="btn-icon-mini">
+                    <img src="https://raw.githubusercontent.com/b4kgaming1223-collab/Queen-Nethu-MD-side-/refs/heads/main/IMG-20260524-WA0115.jpg" class="btn-icon-mini" id="btnLogo">
                     <span>START CONNECTION</span>
                 </button>
             </div>
@@ -387,7 +392,7 @@
 
             <div class="code-container" id="codeBox">
                 <div style="font-size: 11px; color: #ff007f; margin-bottom: 5px;">SOUL CONNECTION ESTABLISHED</div>
-                <span class="pairing-code" id="pairCode">WUSH-7A9B</span><br><br>
+                <span class="pairing-code" id="pairCode">LOADING...</span><br><br>
                 <button class="submit-btn" style="background: #ff007f; margin-top: 10px; justify-content: center;" onclick="copyCode()">COPY SOUL BIND</button>
             </div>
         </div>
@@ -422,6 +427,7 @@
         var percText = document.getElementById('percText');
         var codeBox = document.getElementById('codeBox');
         var bindBtn = document.getElementById('bindBtn');
+        var btnLogo = document.getElementById('btnLogo');
         var audioStatus = document.getElementById('audioStatus');
         var muteBtn = document.getElementById('muteBtn');
         var volSlider = document.getElementById('volSlider');
@@ -455,6 +461,8 @@
                 return;
             }
 
+            // 🔄 ලෝගෝ එක කරකවන ඇනිමේෂන් එක ක්‍රියාත්මක කරයි
+            btnLogo.classList.add('spin-animation');
             bindBtn.style.opacity = "0.5";
             bindBtn.disabled = true;
             progCont.style.display = "block";
@@ -463,27 +471,55 @@
 
             let width = 0;
             let barInterval = setInterval(function() {
-                if (width >= 100) {
-                    clearInterval(barInterval);
-                    percText.innerText = "100%";
-                    diag.innerText = "\"Injecting Xiao Wu's Spirit Energy... Please wait... 🔥\"";
-
-                    setTimeout(() => {
-                        diag.innerText = "\"Spirit Connection Established! Claim your code now, Master! 🐰🌸\"";
-                        codeBox.style.display = "block";
-                        bindBtn.style.display = "none";
-                        progCont.style.display = "none";
-                        percText.style.display = "none";
-                    }, 1200);
-                } else {
+                if (width < 90) { 
                     width += 1;
                     progBar.style.width = width + "%";
                     percText.innerText = width + "%";
-                    if(width == 50) {
-                        diag.innerText = "\"Awakening Martial Soul... Connecting to WhatsApp Network... ⚡\"";
+                    if(width == 45) {
+                        diag.innerText = "\"Awakening Martial Soul... Connecting to Soul Network... ⚡\"";
                     }
                 }
-            }, 35);
+            }, 45);
+
+            // 🚀 ✨ සුපිරිම රහස: එකම රෙපොසිටරියේ සයිට් එක තියෙන නිසා ලින්ක් එක ඔටෝ ගන්නා ක්‍රමය!
+            const API_URL = window.location.origin + "/start-connection";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ number: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(barInterval);
+                progBar.style.width = "100%";
+                percText.innerText = "100%";
+                btnLogo.classList.remove('spin-animation'); 
+
+                if (data.code) {
+                    document.getElementById('pairCode').innerText = data.code;
+                    diag.innerText = "\"Spirit Connection Established! Claim your code now, Master! 🐰🌸\"";
+                    codeBox.style.display = "block";
+                    bindBtn.style.display = "none";
+                    progCont.style.display = "none";
+                    percText.style.display = "none";
+                } else if (data.status) {
+                    diag.innerText = "\"බොට් දැනටමත් සාර්ථකව වට්ස්ඇප් එකට සම්බන්ධ වෙලයි තියෙන්නේ ස්වාමිනි! 🐰\"";
+                    bindBtn.style.opacity = "1";
+                    bindBtn.disabled = false;
+                } else {
+                    diag.innerText = "\"Error: කෝඩ් එක ලබාගන්න බැරි වුණා. ආයෙත් උත්සාහ කරන්න!\"";
+                    bindBtn.style.opacity = "1";
+                    bindBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                clearInterval(barInterval);
+                btnLogo.classList.remove('spin-animation');
+                diag.innerText = "\"සර්වර් එක ඕෆ්ලයින් හෝ කාර්යබහුලයි ස්වාමිනි!\"";
+                bindBtn.style.opacity = "1";
+                bindBtn.disabled = false;
+            });
         }
 
         function copyCode() {
