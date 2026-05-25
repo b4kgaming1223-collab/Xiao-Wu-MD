@@ -59,7 +59,7 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // Reaction එක කලින්ම වදිනවා
+            // Reaction එක කලින්ම වදිනවා (Fix කර ඇත)
             try {
                 await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
             } catch (e) {
@@ -68,45 +68,37 @@ async function startXiaoWuBot() {
 
             let aiReply = null;
 
-            // --- 100% Stable Unlimited AI System ---
+            // --- 100% Stable Unlimited AI System (Blackbox AI Integration) ---
             try {
-                console.log('🔄 Xiao Wu: පිළිතුරක් සකසමින් පවතිනවා...');
+                console.log('🔄 Xiao Wu: නියමිත පිළිතුරක් සකසමින් පවතිනවා...');
                 
-                const response = await axios.post('https://chateverywhere.vyturex.com/api/chat', {
-                    model: "gpt-3.5-turbo",
+                const response = await axios.post('https://api.blackbox.ai/api/chat', {
                     messages: [
-                        { role: "system", content: config.aiSystemPrompt },
-                        { role: "user", content: userPrompt }
-                    ]
+                        { role: "user", content: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }
+                    ],
+                    model: "deepseek-ai/DeepSeek-V3", // අතිශය ස්ථාවර මොඩල් එකක්
+                    max_tokens: 1024
                 }, {
                     headers: { 'Content-Type': 'application/json' },
-                    timeout: 15000
+                    timeout: 20000
                 });
 
                 if (response.data && response.data.choices && response.data.choices[0].message) {
                     aiReply = response.data.choices[0].message.content;
+                } else if (typeof response.data === 'string') {
+                    aiReply = response.data; 
                 }
             } catch (error) {
-                console.log('⚠️ Primary AI Error, switching to fallback...');
-                // Fallback Free API
-                try {
-                    const fallbackRes = await axios.get(`https://api.lolhuman.xyz/api/openai`, {
-                        params: { text: `${config.aiSystemPrompt}\nUser: ${userPrompt}` },
-                        timeout: 10000
-                    });
-                    if (fallbackRes.data && fallbackRes.data.result) {
-                        aiReply = fallbackRes.data.result;
-                    }
-                } catch (err) {
-                    console.log('❌ All AI Systems failed:', err.message);
-                }
+                console.log('❌ Ultimate Server Error:', error.message);
             }
 
             // --- වට්ස්ඇප් එකට පිළිතුර යැවීම ---
             if (aiReply) {
                 try {
+                    // අනවශ්‍ය කෝඩ් අකුරු අයින් කර පිරිසිදු කිරීම
+                    let cleanReply = aiReply.replace(/\$@\$.*?\$@\$/g, '').trim(); 
                     await sock.sendMessage(from, { 
-                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
+                        text: `🐰 *XIAO WU MD* 🌸\n\n${cleanReply}` 
                     }, { quoted: msg });
                 } catch (e) {
                     console.log('Message Send Error:', e.message);
