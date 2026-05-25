@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-// කිසිම API Key එකක් නැතුව නොමිලේ වැඩ කරන සුපිරි AI පද්ධතියක්
+// නොමිලේ වැඩ කරන AI පද්ධතිය සම්බන්ධ කිරීම
 async function getFreeAIResponse(prompt) {
     try {
         const systemInstruction = config.aiSystemPrompt || "Your name is Xiao Wu.";
@@ -16,7 +16,7 @@ async function getFreeAIResponse(prompt) {
             return response.data.result;
         }
         
-        // Backup AI සර්වර් එක (පළමු එක කාර්යබහුල වුවහොත්)
+        // Backup AI සර්වර් එක
         const fallbackRes = await axios.get(`https://api.simsimi.net/v2/?text=${encodeURIComponent(prompt)}&lc=en`);
         return fallbackRes.data.success || null;
     } catch (e) {
@@ -62,7 +62,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව නිල වශයෙන් ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -112,4 +112,3 @@ async function startXiaoWuBot() {
 }
 
 startXiaoWuBot();
-
