@@ -1,7 +1,11 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai'); // නිල Google AI පැකේජය
 const config = require('./config');
+
+// Gemini API එක සම්බන්ධ කිරීම (config.js එකේ තියෙන geminiApiKey එක කෙලින්ම කියවයි)
+const aiKey = config.geminiApiKey || config.apiKey; 
+const genAI = new GoogleGenerativeAI(aiKey);
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -40,7 +44,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව ඔන්ලයින් ආවා! මම සූදානම්! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව නිල වශයෙන් ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -59,58 +63,35 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // Reaction එක මුලින්ම දානවා
+            // Reaction (🐰) එක මුලින්ම දමයි
             try {
                 await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
             } catch (e) {
                 console.log('Reaction Error:', e.message);
             }
 
-            let aiReply = null;
-
-            // --- 100% Sri Lanka Friendly Fast AI System ---
             try {
-                console.log('🔄 Xiao Wu: මොළයේ සෛල අවදි කරමින් පිළිතුරක් සොයනවා...');
+                console.log('🔄 Xiao Wu: නිල Google Gemini සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...');
                 
-                // ස්ථාවර සහ වේගවත් නිදහස් AI සේවාවක්
-                const response = await axios.get(`https://itzpire.com/ai/gpt-4`, {
-                    params: {
-                        prompt: userPrompt,
-                        context: config.aiSystemPrompt // Xiao Wu ගේ චරිතය මෙතනින් ඇතුල් වේ
-                    },
-                    timeout: 20000
+                // නිල Gemini 1.5 Flash මොඩලය සහ config.js එකේ තියෙන aiSystemPrompt එක සම්බන්ධ කිරීම
+                const model = genAI.getGenerativeModel({ 
+                    model: "gemini-1.5-flash",
+                    systemInstruction: config.aiSystemPrompt 
                 });
 
-                if (response.data && response.data.status === "success" && response.data.data) {
-                    aiReply = response.data.data.response;
-                }
-            } catch (error) {
-                console.log('⚠️ Primary AI Failed, switching to secure alternative...');
-                try {
-                    // Alternative Stable API
-                    const altRes = await axios.get(`https://itzpire.com/ai/llama`, {
-                        params: { prompt: `${config.aiSystemPrompt}\n\nUser: ${userPrompt}` }
-                    });
-                    if (altRes.data && altRes.data.data) {
-                        aiReply = altRes.data.data.response;
-                    }
-                } catch (err) {
-                    console.log('❌ All AI Systems failed:', err.message);
-                }
-            }
+                const result = await model.generateContent(userPrompt);
+                const aiReply = result.response.text();
 
-            // --- වට්ස්ඇප් එකට පිළිතුර යැවීම ---
-            if (aiReply) {
-                try {
+                if (aiReply) {
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
-                } catch (e) {
-                    console.log('Message Send Error:', e.message);
                 }
-            } else {
+
+            } catch (error) {
+                console.log('❌ Gemini API Error:', error.message);
                 await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතිවිලි පද්ධතිය චුට්ටක් රීසෙට් වෙනවා. තත්පර ගාණකින් ආයෙමත් මට මැසේජ් එකක් දාන්නකෝ... 🥺💗` 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ නිල API Key එකේ මොකක් හරි අවුලක් තියෙනවා වගේ. config.js එකේ Key එක හරිද කියලා පොඩ්ඩක් බලන්නකෝ... 🥺💗` 
                 }, { quoted: msg });
             }
         }
