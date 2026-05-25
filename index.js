@@ -59,7 +59,7 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // Reaction එක කලින්ම වදිනවා (Fix කර ඇත)
+            // Reaction එක කලින්ම වදිනවා
             try {
                 await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
             } catch (e) {
@@ -68,38 +68,44 @@ async function startXiaoWuBot() {
 
             let aiReply = null;
 
-            // --- 100% Stable Unlimited AI System (Blackbox AI Integration) ---
+            // --- 100% Unstoppable Public AI API ---
             try {
-                console.log('🔄 Xiao Wu: නියමිත පිළිතුරක් සකසමින් පවතිනවා...');
+                console.log('🔄 Xiao Wu: පිළිතුරක් සකසමින් පවතිනවා...');
                 
-                const response = await axios.post('https://api.blackbox.ai/api/chat', {
-                    messages: [
-                        { role: "user", content: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }
-                    ],
-                    model: "deepseek-ai/DeepSeek-V3", // අතිශය ස්ථාවර මොඩල් එකක්
-                    max_tokens: 1024
-                }, {
-                    headers: { 'Content-Type': 'application/json' },
-                    timeout: 20000
+                // වඩාත් ස්ථාවර සහ බ්ලොක් නොවන පද්ධතියක් භාවිතය
+                const response = await axios.get(`https://api.simsimi.vn/v1/simtalk`, {
+                    params: {
+                        text: userPrompt,
+                        lc: "si" // සිංහල භාෂාව සෘජුවම සක්‍රීය කර ඇත
+                    },
+                    timeout: 15000
                 });
 
-                if (response.data && response.data.choices && response.data.choices[0].message) {
-                    aiReply = response.data.choices[0].message.content;
-                } else if (typeof response.data === 'string') {
-                    aiReply = response.data; 
+                if (response.data && response.data.message) {
+                    aiReply = response.data.message;
                 }
             } catch (error) {
-                console.log('❌ Ultimate Server Error:', error.message);
+                console.log('⚠️ Primary AI Failed, trying secure backup...');
+                try {
+                    // Backup Stable Web AI
+                    const backupRes = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=si&dt=t&q=${encodeURIComponent(userPrompt)}`);
+                    if (backupRes.data && backupRes.data[0][0][0]) {
+                        aiReply = `ඔයා කිව්වේ මේකද ස්වාමිනි: "${backupRes.data[0][0][0]}" - මගේ සර්වර්ස් චුට්ටක් බිසී, හැබැයි මම ඔයා එක්කමයි ඉන්නේ! 🌸`;
+                    }
+                } catch (err) {
+                    console.log('❌ All AI Systems failed:', err.message);
+                }
             }
 
             // --- වට්ස්ඇප් එකට පිළිතුර යැවීම ---
             if (aiReply) {
                 try {
-                    // අනවශ්‍ය කෝඩ් අකුරු අයින් කර පිරිසිදු කිරීම
-                    let cleanReply = aiReply.replace(/\$@\$.*?\$@\$/g, '').trim(); 
-                    await sock.sendMessage(from, { 
-                        text: `🐰 *XIAO WU MD* 🌸\n\n${cleanReply}` 
-                    }, { quoted: msg });
+                    // Xiao Wu ගේ අනන්‍යතාවය එක් කිරීම
+                    let finalText = `🐰 *XIAO WU MD* 🌸\n\n${aiReply}`;
+                    if (!finalText.includes('ස්වාමිනි')) {
+                        finalText += `\n\nඅනේ මන්දා ස්වාමිනි... 🥺💗`;
+                    }
+                    await sock.sendMessage(from, { text: finalText }, { quoted: msg });
                 } catch (e) {
                     console.log('Message Send Error:', e.message);
                 }
