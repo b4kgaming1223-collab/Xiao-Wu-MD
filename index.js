@@ -1,10 +1,12 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const axios = require('axios');
 const config = require('./config');
+const { GoogleGenAI } = require('@google/genai');
 
 // 🔑 ඔයා ලබාගත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
 const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
+
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -62,36 +64,22 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Official Google AI Structure for Gemini 1.5 Flash
-                const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    {
-                        contents: [
-                            {
-                                role: "user",
-                                parts: [
-                                    { text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        headers: { 'Content-Type': 'application/json' }
-                    }
-                );
+                // 🚀 Bulletproof Official Google GenAI SDK Call
+                const response = await ai.models.generateContent({
+                    model: 'gemini-1.5-flash',
+                    contents: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`,
+                });
 
-                // 🛠️ Stable Text Extraction
-                if (response.data && response.data.candidates && response.data.candidates[0].content) {
-                    const aiReply = response.data.candidates[0].content.parts[0].text;
+                if (response && response.text) {
                     await sock.sendMessage(from, { 
-                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
+                        text: `🐰 *XIAO WU MD* 🌸\n\n${response.text}` 
                     }, { quoted: msg });
                 } else {
-                    console.error('❌ Structure Mismatch:', JSON.stringify(response.data));
+                    console.log('❌ Response empty');
                 }
 
             } catch (error) {
-                console.error('❌ AI Error Details:', error.response?.data || error.message);
+                console.log('❌ Official Gemini SDK Error:', error.message);
             }
         }
     });
