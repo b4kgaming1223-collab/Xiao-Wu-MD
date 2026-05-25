@@ -1,9 +1,7 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const axios = require('axios');
 const config = require('./config');
 
-// 🔑 ඔයා ලබාගත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
 const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
 
 async function startXiaoWuBot() {
@@ -40,7 +38,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE WITH STABLE ENGINE! 🌸⚡\n');
+            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE! 🌸⚡\n');
         }
     });
 
@@ -62,30 +60,33 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Ultra-Stable Legacy API Endpoint using gemini-pro
-                const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-                    {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
                         contents: [{
+                            role: "user",
                             parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
                         }]
-                    },
-                    { headers: { 'Content-Type': 'application/json' } }
-                );
+                    })
+                });
 
-                if (response.data && response.data.candidates && response.data.candidates[0].content) {
-                    const aiReply = response.data.candidates[0].content.parts[0].text;
+                const data = await response.json();
+
+                if (data && data.candidates && data.candidates[0].content) {
+                    const aiReply = data.candidates[0].content.parts[0].text;
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
                 }
 
             } catch (error) {
-                console.error('❌ AI Engine Error:', error.response?.data || error.message);
+                console.log('❌ AI Error:', error.message);
             }
         }
     });
 }
 
 startXiaoWuBot();
-
