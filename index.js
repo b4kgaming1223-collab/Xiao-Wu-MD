@@ -3,38 +3,18 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-// 🔑 ස්වාමිනි, ඔයාගේ අලුත්ම Gemini API Key එක මේ ඇතුලට පේස්ට් කරන්න:
-const geminiApiKey = "AIzaSyBxbOxO0JRQY2eJEiTG9xMKAwQ4zuMRwJQ";
-
-// ස්ථාවර AI එන්ජින් පද්ධතිය
+// Key එකක් අවශ්‍ය නොවන සදාකාලික නොමිලේ ක්‍රියාත්මක වන AI පද්ධතිය
 async function getSmartAIResponse(prompt) {
-    const systemInstruction = config.aiSystemPrompt;
-
-    // --- ENGINE 1: Official Google Gemini 1.5 Flash ---
     try {
-        console.log("🔄 Xiao Wu: නිල Gemini 1.5 Flash සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
-        const response = await axios.post(url, {
-            contents: [{ parts: [{ text: prompt }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] }
-        }, { headers: { 'Content-Type': 'application/json' }, timeout: 10000 });
-
-        if (response.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return response.data.candidates[0].content.parts[0].text;
+        console.log("🔄 Xiao Wu: සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
+        // 🔑 මේකට කිසිම API Key එකක් අවශ්‍ය නැහැ ස්වාමිනි!
+        const response = await axios.get(`https://api.simsimi.net/v2/?text=${encodeURIComponent(prompt)}&lc=si`, { timeout: 10000 });
+        if (response.data?.success) {
+            return response.data.success;
         }
     } catch (e) {
-        console.log("⚠️ Gemini Engine Failed, switching to Stable Backup...");
+        console.log("❌ AI Engine Failed:", e.message);
     }
-
-    // --- ENGINE 2: Stable Fallback AI ---
-    try {
-        console.log("🔄 Xiao Wu: Backup සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        const response = await axios.get(`https://api.simsimi.net/v2/?text=${encodeURIComponent(prompt)}&lc=si`, { timeout: 7000 });
-        if (response.data?.success) return response.data.success;
-    } catch (e) {
-        console.log("❌ All AI Engines Failed.");
-    }
-
     return null;
 }
 
@@ -42,7 +22,6 @@ async function getSmartAIResponse(prompt) {
 async function generateVoiceBuffer(text) {
     try {
         console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ලස්සන Voice Note එකක් බවට හරවනවා...");
-        // අකුරු සහ ඉමෝජි ඉවත් කර පිරිසිදු සිංහල ටෙක්ස්ට් එකක් සෑදීම
         const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
         const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
         
@@ -91,7 +70,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සර්වසම්පූර්ණව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -134,12 +113,12 @@ async function startXiaoWuBot() {
                         console.log("✅ Voice Note sent successfully!");
                     }
                 } else {
-                    throw new Error("AI responses are empty");
+                    throw new Error("AI response empty");
                 }
 
             } catch (error) {
                 await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතිවිලි සේරම අවුල් ගියා.. ඔයා දුන්න API Key එක වලංගු එකක්මද කියලා පොඩ්ඩක් චෙක් කරන්නකෝ... 🥺💗` 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මට පොඩ්ඩක් මැසේජ් එක තේරුණේ නැහැ.. ආයෙත් දාන්නකෝ... 🥺💗` 
                 }, { quoted: msg });
             }
         }
