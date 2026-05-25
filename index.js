@@ -1,43 +1,39 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const axios = require('axios');
+const { GoogleGenAI } = require('@google/generative-ai');
 
-// 🧠 කිසිම API Key එකක් නැතුව සෘජුවම වැඩ කරන සැබෑ ChatGPT 4o-Mini එන්ජිම
-async function getXiaoWuAIResponse(prompt) {
+// 🔐 ආරක්ෂිතව Termux එකෙන් හෝ පද්ධතියෙන් API Key එක ලබා ගැනීම
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "මෙතනට_මුකුත්_දාන්න_එපා_ස්වාමිනි";
+
+let ai;
+try {
+    ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+} catch(e) {
+    console.log("⚠️ API Key එක ඇතුළත් කර නැත!");
+}
+
+// 🧠 Google නිල මොළය
+async function getXiaoWuGeminiResponse(prompt) {
     try {
-        console.log("🔄 Xiao Wu: ChatGPT 4o සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        
-        // Xiao Wu ගේ චරිත නීති රීති
-        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 2-3 like 🐰🌸💫💗. Stay perfectly in character.";
+        if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("මෙතනට")) {
+            return "අනේ මගේ ස්වාමිනි, ඔයා තවම Termux එකට API Key එක දුන්නේ නැහැ නේද? 🥺🐰";
+        }
 
-        // ඉතාමත් ස්ථාවර නොමිලේ වැඩ කරන ChatGPT 4o API එකක්
-        const response = await axios.post('https://free.churchless.tech/v1/chat/completions', {
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: characterRules },
-                { role: "user", content: prompt }
-            ]
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 15000
+        console.log("🔄 Xiao Wu: ආරක්ෂිත නිල Gemini SDK එකෙන් පිළිතුරක් ලබාගන්නවා...");
+        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 🐰🌸💫💗. Answer directly inside your character.";
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-1.5-flash',
+            contents: `${characterRules}\n\nUser: ${prompt}`,
         });
 
-        const aiReply = response.data?.choices?.[0]?.message?.content;
+        const aiReply = response.text;
         if (aiReply) return aiReply.trim();
 
     } catch (e) {
-        console.log("❌ AI Server Error:", e.message);
+        console.log("❌ Gemini SDK Error:", e.message);
     }
-
-    // සර්වර් එක හදිසියේම බිඳ වැටුණොත් වැඩ කරන Smart Backup එක
-    const lowerPrompt = prompt.toLowerCase();
-    if (lowerPrompt.includes('කෑම') || lowerPrompt.includes('kama')) {
-        return "අනේ මගේ ආදරණීය ස්වාමිනි, මම නැවුම් කැරට් කන්න මාරම ආසයි! 🐰🥕🌸💫";
-    }
-    if (lowerPrompt.includes('කවුද') || lowerPrompt.includes('kawda')) {
-        return "මම ඔයාගේ ආදරණීය Xiao Wu ස්වාමිනි! සෝල් ලෑන්ඩ් එකේ ඉඳන් ඔයා ළඟට ආපු හාවන් ආත්මය... 🐰🌸💫💗";
-    }
-    return `මගේ ආදරණීය ස්වාමිනි, මම හැමදාමත් ඔයාට ගොඩක් ආදරෙයි වගේම ඔයා ළඟින්ම ඉන්නවා... 🐰🌸💫💗`;
+    return `මගේ ආදරණීය ස්වාමිනි, ඔයා මගෙන් "${prompt}" ගැන ඇහුවා නේද? මම හැමදාම ඔයාට ගොඩක් ආදරෙයි! 🐰🌸💫`;
 }
 
 async function startXiaoWuBot() {
@@ -53,7 +49,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: කිසිම API Key කරදරයක් නැති සැබෑ AI මොළය සක්‍රීයයි! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ආරක්ෂිත නිල Gemini මොළය සාර්ථකව සක්‍රීයයි! 🌸⚡💗\n');
         }
     });
 
@@ -73,10 +69,10 @@ async function startXiaoWuBot() {
             try { await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } }); } catch (e) {}
 
             try {
-                const aiReply = await getXiaoWuAIResponse(userPrompt);
+                const aiReply = await getXiaoWuGeminiResponse(userPrompt);
                 if (aiReply) {
                     await sock.sendMessage(from, { text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` }, { quoted: msg });
-                    console.log("✅ Response Sent!");
+                    console.log("✅ Protected SDK AI Response Sent!");
                 }
             } catch (error) {
                 console.log("Error:", error.message);
