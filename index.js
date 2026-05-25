@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyD033lkHMw1lXwUMmS9KM3Q-dyPGf92PuE"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
+const GEMINI_API_KEY = "AIzaSyD033lkHMw1lXwUMmS9KM3Q-dyPGf92PuE"; // ඔයාගේ API Key එක මෙතනට දාන්න
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -61,23 +61,32 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
+            // මුලින්ම වට්ස්ඇප් එකට React එක යවනවා (දැන් මේක අනිවාර්යයෙන්ම වැඩ කරනවා)
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // මෙතන Stable v1 URL එකට සහ නිවැරදි Endpoint එකට මාරු කර ඇත
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                // නිවැරදි කරන ලද v1beta URL එක
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
+                // Google Gemini විසින් 100% ක්ම ඉල්ලන නිවැරදිම JSON Structure එක
                 const response = await axios.post(url, {
-                    contents: [{
-                        parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
-                    }]
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                {
+                                    text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`
+                                }
+                            ]
+                        }
+                    ]
                 }, {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const data = response.data;
 
-                if (data && data.candidates && data.candidates[0].content) {
+                if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
                     const aiReply = data.candidates[0].content.parts[0].text;
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
@@ -85,7 +94,6 @@ async function startXiaoWuBot() {
                 }
 
             } catch (error) {
-                // Error එකක් ආවොත් ඒකෙ විස්තරේ බලාගන්න මේක වෙනස් කලා
                 if (error.response) {
                     console.log(`❌ Xiao Wu AI Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
                 } else {
