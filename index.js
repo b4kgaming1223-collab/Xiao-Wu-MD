@@ -66,35 +66,39 @@ async function startXiaoWuBot() {
                 console.log('Reaction Error:', e.message);
             }
 
-            const fullPrompt = `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`;
             let aiReply = null;
 
-            // --- API 1: Hercai API ---
+            // --- 100% Stable Unlimited AI System ---
             try {
-                console.log('🔄 Xiao Wu: පළමු AI මාර්ගයෙන් පිළිතුරක් සොයනවා...');
-                const response = await axios.get(`https://hercai.onrender.com/v3/hercai`, {
-                    params: { model: "v3", content: fullPrompt },
-                    timeout: 10000 // තත්පර 10කින් උත්තර නැත්නම් Backup එකට යනවා
+                console.log('🔄 Xiao Wu: පිළිතුරක් සකසමින් පවතිනවා...');
+                
+                const response = await axios.post('https://chateverywhere.vyturex.com/api/chat', {
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        { role: "system", content: config.aiSystemPrompt },
+                        { role: "user", content: userPrompt }
+                    ]
+                }, {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 15000
                 });
-                if (response.data && response.data.reply) {
-                    aiReply = response.data.reply;
+
+                if (response.data && response.data.choices && response.data.choices[0].message) {
+                    aiReply = response.data.choices[0].message.content;
                 }
             } catch (error) {
-                console.log('⚠️ Xiao Wu: පළමු AI එක කාර්යබහුලයි (503/Timeout). Backup AI එකට මාරු වෙනවා...');
-            }
-
-            // --- API 2: DeepSeek/Llama Backup API (පළමු එක වැඩ නැත්නම් විතරක් ක්‍රියාත්මක වේ) ---
-            if (!aiReply) {
+                console.log('⚠️ Primary AI Error, switching to fallback...');
+                // Fallback Free API
                 try {
-                    const response = await axios.get(`https://api.sandipbbaruwal.gq/llama`, {
-                        params: { prompt: fullPrompt },
-                        timeout: 15000
+                    const fallbackRes = await axios.get(`https://api.lolhuman.xyz/api/openai`, {
+                        params: { text: `${config.aiSystemPrompt}\nUser: ${userPrompt}` },
+                        timeout: 10000
                     });
-                    if (response.data && response.data.answer) {
-                        aiReply = response.data.answer;
+                    if (fallbackRes.data && fallbackRes.data.result) {
+                        aiReply = fallbackRes.data.result;
                     }
-                } catch (error) {
-                    console.log('❌ Xiao Wu: දෙවන AI එකත් කාර්යබහුලයි:', error.message);
+                } catch (err) {
+                    console.log('❌ All AI Systems failed:', err.message);
                 }
             }
 
@@ -108,9 +112,8 @@ async function startXiaoWuBot() {
                     console.log('Message Send Error:', e.message);
                 }
             } else {
-                // AI දෙකම වැඩ නැත්නම් විතරක් වැටෙන පණිවිඩය
                 await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතුවිලි ජාලයන් (AI Servers) මේ වෙලාවේ ගොඩක් කාර්යබහුලයි. චුට්ටක් වෙලා ගිහින් ආයෙමත් මට කතා කරන්නකෝ... 🥺💗` 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතුවිලි ජාලයන් මේ වෙලාවේ පොඩ්ඩක් අවුල් වෙලා. චුට්ටක් වෙලා ගිහින් ආයෙමත් මට කතා කරන්නකෝ... 🥺💗` 
                 }, { quoted: msg });
             }
         }
