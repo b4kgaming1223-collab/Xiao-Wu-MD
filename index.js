@@ -20,14 +20,12 @@ async function startXiaoWuBot() {
     if (!sock.authState.creds.registered) {
         let phoneNumber = config.ownerNumber.replace(/[^0-9]/g, '');
         if (phoneNumber) {
-            console.log(`\n🐰 XIAO WU MD: ස්වාමිනි ${phoneNumber} අංකය සඳහා Pairing Code එක සකසමින් පවතිනවා... 💫`);
+            console.log(`\n🐰 XIAO WU MD: Pairing Code එක සකසමින් පවතිනවා... 💫`);
             await delay(3000);
             try {
                 let code = await sock.requestPairingCode(phoneNumber);
                 code = code?.match(/.{1,4}/g)?.join('-') || code;
-                console.log(`\n==================================================`);
-                console.log(`🔥 YOUR XIAO WU MD PAIRING CODE IS: ${code} 🔥`);
-                console.log(`==================================================\n`);
+                console.log(`\n🔥 YOUR XIAO WU MD PAIRING CODE IS: ${code} 🔥\n`);
             } catch (error) {
                 console.log('❌ Pairing Code Error:', error.message);
             }
@@ -42,9 +40,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n==================================================');
-            console.log('🐰 XIAO WU MD IS SUCCESSFULLY ONLINE WITH GEMINI! 🌸⚡');
-            console.log('==================================================\n');
+            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE! 🌸⚡\n');
         }
     });
 
@@ -66,29 +62,25 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Corrected Gemini URL with v1beta (This works 100%)
-                const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    {
+                // 🚀 Safe JSON Request Encoding
+                const response = await axios({
+                    method: 'post',
+                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                    data: {
                         contents: [{
-                            parts: [{ text: `${config.aiSystemPrompt}\n\nUser: ${userPrompt}` }]
+                            parts: [{ text: `${config.aiSystemPrompt}\nUser: ${userPrompt}` }]
                         }]
-                    },
-                    { headers: { 'Content-Type': 'application/json' } }
-                );
+                    }
+                });
 
-                // 🛠️ Safe Response Parsing
-                if (response.data && response.data.candidates && response.data.candidates[0].content) {
-                    const aiReply = response.data.candidates[0].content.parts[0].text;
-                    await sock.sendMessage(from, { 
-                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}\n\n_Powered by Gemini AI Engine_ 🇱🇰` 
-                    }, { quoted: msg });
-                } else {
-                    console.error('❌ Response structure mismatch:', JSON.stringify(response.data));
-                }
+                const aiReply = response.data.candidates[0].content.parts[0].text;
+                await sock.sendMessage(from, { 
+                    text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
+                }, { quoted: msg });
 
             } catch (error) {
-                console.error('❌ AI Error:', error.response?.data || error.message);
+                console.error('❌ AI Error Details:', error.response?.data || error.message);
             }
         }
     });
