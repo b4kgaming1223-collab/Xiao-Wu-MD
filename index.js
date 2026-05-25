@@ -66,7 +66,7 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 2026 New Stable 1.5 Flash Endpoint
+                // 🚀 2026 Stable Gemini 1.5 Flash Endpoint
                 const response = await axios.post(
                     `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
                     {
@@ -77,10 +77,15 @@ async function startXiaoWuBot() {
                     { headers: { 'Content-Type': 'application/json' } }
                 );
 
-                const aiReply = response.data.candidates[0].content.parts[0].text;
-                await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}\n\n_Powered by Gemini AI Engine_ 🇱🇰` 
-                }, { quoted: msg });
+                // 🛠️ Safe Response Parsing (ගූගල් එකෙන් එන ඩේටා නිවැරදිව ලබාගැනීම)
+                if (response.data && response.data.candidates && response.data.candidates[0].content) {
+                    const aiReply = response.data.candidates[0].content.parts[0].text;
+                    await sock.sendMessage(from, { 
+                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}\n\n_Powered by Gemini AI Engine_ 🇱🇰` 
+                    }, { quoted: msg });
+                } else {
+                    console.error('❌ Invalid API Response Structure:', JSON.stringify(response.data));
+                }
 
             } catch (error) {
                 console.error('❌ AI Error:', error.response?.data || error.message);
