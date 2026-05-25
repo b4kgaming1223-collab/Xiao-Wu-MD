@@ -4,7 +4,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('./config');
 
 // 🔑 ස්වාමිනි, ඔයාගේ අලුත්ම Gemini API Key එක මේ ඇතුලට පේස්ට් කරන්න:
-const aiKey = "ඔයාගේ_අලුත්_API_KEY_එක_මෙතනට_දන්න"; 
+const aiKey = "AIzaSyBEm7BTUBwbssclB8LrCDIknylQUUDE2hM"; 
 const genAI = new GoogleGenerativeAI(aiKey);
 
 async function startXiaoWuBot() {
