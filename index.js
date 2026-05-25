@@ -62,22 +62,33 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Safe JSON Request Encoding
-                const response = await axios({
-                    method: 'post',
-                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                    data: {
-                        contents: [{
-                            parts: [{ text: `${config.aiSystemPrompt}\nUser: ${userPrompt}` }]
-                        }]
+                // 🚀 Official Google AI Structure for Gemini 1.5 Flash
+                const response = await axios.post(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    {
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [
+                                    { text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        headers: { 'Content-Type': 'application/json' }
                     }
-                });
+                );
 
-                const aiReply = response.data.candidates[0].content.parts[0].text;
-                await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
-                }, { quoted: msg });
+                // 🛠️ Stable Text Extraction
+                if (response.data && response.data.candidates && response.data.candidates[0].content) {
+                    const aiReply = response.data.candidates[0].content.parts[0].text;
+                    await sock.sendMessage(from, { 
+                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
+                    }, { quoted: msg });
+                } else {
+                    console.error('❌ Structure Mismatch:', JSON.stringify(response.data));
+                }
 
             } catch (error) {
                 console.error('❌ AI Error Details:', error.response?.data || error.message);
