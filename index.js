@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyCeVbpdV8d4myfc43vnJoeRwz3MebvSpIE"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
+const GEMINI_API_KEY = "AIzaSyD033lkHMw1lXwUMmS9KM3Q-dyPGf92PuE"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
