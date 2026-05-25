@@ -66,9 +66,9 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Updated Stable Gemini v1 API Call
+                // 🚀 2026 New Stable 1.5 Flash Endpoint
                 const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+                    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
                     {
                         contents: [{
                             parts: [{ text: `${config.aiSystemPrompt}\n\nUser: ${userPrompt}` }]
