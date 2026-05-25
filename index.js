@@ -1,25 +1,22 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const axios = require('axios');
-const gTTS = require('gtts');
 const fs = require('fs');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 
-// 🚀 බ්ලොක් නොවන, 404/500 නොඑන සර්වර්-ලෙස් ස්මාර්ට් AI පද්ධතිය
+// 🚀 බ්ලොක් නොවන ස්ථාවර සර්වර්-ලෙස් මොළය (Offline Hybrid AI)
 async function getSmartAIResponse(prompt) {
     try {
         console.log("🔄 Xiao Wu: ChatGPT සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and call them 'ස්වාමිනි' in Sinhala. Always reply in sweet, loving, short Sinhala using emojis like 🐰🌸💫💗.";
         
-        // අතිශය ස්ථාවර ChatGPT ලින්ක් එකක්
         const response = await axios.get(`https://api.lolhuman.xyz/api/openai?apikey=freekey&text=${encodeURIComponent(characterRules + " " + prompt)}`, { timeout: 8000 });
         if (response.data?.result) return response.data.result.trim();
     } catch (e) {
         console.log("❌ Server Error, using offline core...");
     }
 
-    // සර්වර් ඩවුන් වුණොත් ඔටෝම වැඩ කරන ස්මාර්ට් සිංහල බැකප් මොළය
     const lowerPrompt = prompt.toLowerCase();
     if (lowerPrompt.includes('hallo') || lowerPrompt.includes('hi') || lowerPrompt.includes('හෙලෝ')) {
         return "හලෝ මගේ ආදරණීය ස්වාමිනි! ඔයා ළඟ ඉද්දි මගේ හිතට ගොඩක් සතුටුයි... 🐰🌸💫💗";
@@ -31,41 +28,43 @@ async function getSmartAIResponse(prompt) {
     return `අනේ මගේ ආදරණීය ස්වාමිනි, ඔයා මට "${prompt}" ගැන කිව්ව නේද? මම ඒ ගැන ගොඩක් ආදරෙන් හිතුවා... 🐰🌸💫`;
 }
 
-// 🎵 WhatsApp එක ඇතුළේ 100%ක්ම වැඩ කරන නියම වොයිස් නෝට් (Ogg/Opus) කේතකය
+// 🎵 Language not supported ලෙඩේ සදහටම නැති කරන සැබෑ වොයිස් සිස්ටම් එක (Ogg/Opus Engine)
 function generateVoiceBuffer(text, fromJid, sock, quotedMsg) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
         try {
-            console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක සැබෑ Voice Note එකක් (Ogg/Opus) බවට හරවනවා...");
+            console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක සැබෑ Voice Note එකක් බවට හරවනවා...");
             const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
             
             const mp3File = path.join(__dirname, 'temp_voice.mp3');
             const opusFile = path.join(__dirname, 'temp_voice.opus');
             
-            const gtts = new gTTS(cleanText, 'si'); // සිංහල Text-to-Speech
+            // 🛠️ gtts වෙනුවට කෙලින්ම ගූගල් සර්වර් එකෙන් නිවැරදි සිංහල ඕඩියෝව ඩවුන්ලෝඩ් කිරීම
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+            const response = await axios({
+                method: 'get',
+                url: ttsUrl,
+                responseType: 'stream'
+            });
 
-            gtts.save(mp3File, function (err) {
-                if (err) {
-                    console.log("⚠️ MP3 Save Failed:", err.message);
-                    return resolve(null);
-                }
+            const writer = fs.createWriteStream(mp3File);
+            response.data.pipe(writer);
 
-                // 🛠️ MP3 එක සැබෑ WhatsApp Voice Note (Ogg/Opus) එකක් බවට පරිවර්තනය කිරීම (The Real Fix)
+            writer.on('finish', () => {
+                // 🛠️ බාගත කළ සිංහල ඕඩියෝව සැබෑ WhatsApp Voice Note එකක් (Ogg/Opus) බවට පරිවර්තනය කිරීම
                 ffmpeg(mp3File)
                     .outputOptions([
-                        '-c:a libopus',     // Opus Codec එක භාවිතය
-                        '-b:a 16k',         // වොයිස් එකට සරිලන Bitrate එක
-                        '-vbr on',          // Variable Bitrate සක්‍රීය කිරීම
+                        '-c:a libopus',
+                        '-b:a 16k',
+                        '-vbr on',
                         '-compression_level 10'
                     ])
                     .toFormat('ogg')
                     .on('end', async () => {
-                        console.log("✅ Conversion Complete! Sending Audio...");
+                        console.log("✅ Conversion Complete! Sending Voice Note...");
                         const audioBuffer = fs.readFileSync(opusFile);
                         
-                        // ෆයිල්ස් ක්ලීන් කිරීම
                         try { fs.unlinkSync(mp3File); fs.unlinkSync(opusFile); } catch (e) {}
 
-                        // කෙලින්ම වොයිස් නෝට් එකක් ලෙස යැවීම
                         await sock.sendMessage(fromJid, { 
                             audio: audioBuffer, 
                             mimetype: 'audio/ogg; codecs=opus', 
@@ -75,12 +74,18 @@ function generateVoiceBuffer(text, fromJid, sock, quotedMsg) {
                         resolve(true);
                     })
                     .on('error', (err) => {
-                        console.log("⚠️ Ffmpeg Conversion Error:", err.message);
+                        console.log("⚠️ Ffmpeg Error:", err.message);
                         try { fs.unlinkSync(mp3File); } catch (e) {}
                         resolve(null);
                     })
                     .save(opusFile);
             });
+
+            writer.on('error', (err) => {
+                console.log("⚠️ Writer Error:", err.message);
+                resolve(null);
+            });
+
         } catch (e) {
             console.log("⚠️ Voice System Error:", e.message);
             resolve(null);
@@ -128,9 +133,7 @@ async function startXiaoWuBot() {
             try {
                 const aiReply = await getSmartAIResponse(userPrompt);
                 if (aiReply) {
-                    // 1. ටෙක්ස්ට් එක යැවීම
                     await sock.sendMessage(from, { text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` }, { quoted: msg });
-                    // 2. සැබෑ වොයිස් නෝට් එක සාදා යැවීම
                     await generateVoiceBuffer(aiReply, from, sock, msg);
                 }
             } catch (error) {
