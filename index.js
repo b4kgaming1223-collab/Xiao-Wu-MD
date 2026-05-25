@@ -1,12 +1,10 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
+const axios = require('axios');
 const config = require('./config');
-const { GoogleGenAI } = require('@google/genai');
 
 // 🔑 ඔයා ලබාගත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
 const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
-
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -42,7 +40,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE! 🌸⚡\n');
+            console.log('\n🐰 XIAO WU MD IS SUCCESSFULLY ONLINE WITH STABLE ENGINE! 🌸⚡\n');
         }
     });
 
@@ -64,25 +62,30 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Bulletproof Official Google GenAI SDK Call
-                const response = await ai.models.generateContent({
-                    model: 'gemini-1.5-flash',
-                    contents: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`,
-                });
+                // 🚀 Ultra-Stable Legacy API Endpoint using gemini-pro
+                const response = await axios.post(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+                    {
+                        contents: [{
+                            parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
+                        }]
+                    },
+                    { headers: { 'Content-Type': 'application/json' } }
+                );
 
-                if (response && response.text) {
+                if (response.data && response.data.candidates && response.data.candidates[0].content) {
+                    const aiReply = response.data.candidates[0].content.parts[0].text;
                     await sock.sendMessage(from, { 
-                        text: `🐰 *XIAO WU MD* 🌸\n\n${response.text}` 
+                        text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
-                } else {
-                    console.log('❌ Response empty');
                 }
 
             } catch (error) {
-                console.log('❌ Official Gemini SDK Error:', error.message);
+                console.error('❌ AI Engine Error:', error.response?.data || error.message);
             }
         }
     });
 }
 
 startXiaoWuBot();
+
