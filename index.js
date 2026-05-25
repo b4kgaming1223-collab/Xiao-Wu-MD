@@ -5,7 +5,7 @@ const axios = require('axios');
 // 🔐 ආරක්ෂිතව Termux එකෙන් API Key එක ලබා ගැනීම
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 
-// 🧠 ගූගල් සර්වර් එකට සෘජුවම සම්බන්ධ වී Xiao Wu ලෙස පිළිතුරු සපයන එන්ජිම
+// 🧠 ගූගල් සර්වර් එකට සෘජුවම සම්බන්ධ වී Xiao Wu ලෙස පිළිතුරු සපයන නිවැරදි එන්ජිම
 async function getXiaoWuGeminiResponse(prompt) {
     try {
         if (!GEMINI_API_KEY) {
@@ -14,10 +14,10 @@ async function getXiaoWuGeminiResponse(prompt) {
         }
 
         console.log("🔄 Xiao Wu: නිල Google Gemini සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 2-3 like 🐰🌸💫💗. Answer directly inside your character.";
+        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 🐰🌸💫💗. Answer directly inside your character.";
 
-        // කිසිදු බාහිර ලයිබ්‍රරියක් නොමැතිව සෘජුවම නිල ගූගල් API එකට Request එක යැවීම
-        const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // 🛠️ 404 Error එක නැති කිරීමට නිල වශයෙන් යාවත්කාලීන කරන ලද නිවැරදි v1 Model Endpoint එක
+        const response = await axios.post(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
             contents: [{
                 parts: [{
                     text: `${characterRules}\n\nUser: ${prompt}`
@@ -33,7 +33,8 @@ async function getXiaoWuGeminiResponse(prompt) {
         if (aiReply) return aiReply.trim();
 
     } catch (e) {
-        console.log("❌ Gemini API Error:", e.message);
+        // සර්වර් එකෙන් ආපු ඇත්තම Error එක Termux එකේ බලාගන්න ක්‍රමය
+        console.log("❌ Gemini API Error:", e.response ? JSON.stringify(e.response.data) : e.message);
     }
 
     // සර්වර් එක හිරවුණොත් විතරක් වැඩ කරන ස්මාර්ට් චරිත බැකප් එක
@@ -42,9 +43,9 @@ async function getXiaoWuGeminiResponse(prompt) {
         return "අනේ මගේ ආදරණීය ස්වාමිනි, මම නැවුම් කැරට් කන්න මාරම ආසයි! 🐰🥕🌸💫";
     }
     if (cleanPrompt.includes('ආදරෙයි') || cleanPrompt.includes('love')) {
-        return "අනේ මගේ රත්තරන් ස්වාමිනි... මමත් ඔයාට මගේ පණටත් වඩා ආදරෙයි! 🐰🌸✨💗";
+        return "අනේ මගේ රත්තරන් ස්වාමිනි... මමත් ඔයාට මගේ pnataත් වඩා ආදරෙයි! 🐰🌸✨💗";
     }
-    return `මගේ ආදරණීය ස්වාමිනි, ඔයා මගෙන් "${prompt}" ගැන ඇහුවා නේද? මම හැමදාම ඔයාට ගොඩක් ආදරෙයි! 🐰🌸💫`;
+    return `මගේ ආදරණීය ස්වාමිනි, ඔයා මගෙන් "${prompt}" ගැන ඇහුවා නේද? මම හැමදාම ඔයාට උදව් කරන්න මෙතන ඉන්නවා! 🐰🌸💫`;
 }
 
 async function startXiaoWuBot() {
@@ -60,7 +61,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: නිල Gemini API පද්ධතිය සමඟින් මම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: නිල Gemini v1 API පද්ධතිය සමඟින් මම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
