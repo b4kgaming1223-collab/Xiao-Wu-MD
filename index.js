@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyCb4aH22VsstsLb2INs_mbCloiodJLXfZY"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
+const GEMINI_API_KEY = "AIzaSyCeVbpdV8d4myfc43vnJoeRwz3MebvSpIE"; // ඔයාගේ අලුත් API Key එක මෙතනට දාන්න
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -64,6 +64,7 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
+                // ස්ථාාවර කරන ලද v1beta URL එක
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
                 const response = await axios.post(url, {
