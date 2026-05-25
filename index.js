@@ -59,37 +59,59 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // FIX: AI එකට යන්න කලින්ම Reaction එක වදින්න සලස්වා ඇත!
+            // Reaction එක කලින්ම වදිනවා
             try {
                 await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
             } catch (e) {
                 console.log('Reaction Error:', e.message);
             }
 
+            const fullPrompt = `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`;
+            let aiReply = null;
+
+            // --- API 1: Hercai API ---
             try {
-                // Free, No-Key, 100% Working AI API Endpoint (Llama-3 Integration)
-                const url = `https://hercai.onrender.com/v3/hercai`;
-                
-                const response = await axios.get(url, {
-                    params: {
-                        model: "v3",
-                        content: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`
-                    }
+                console.log('🔄 Xiao Wu: පළමු AI මාර්ගයෙන් පිළිතුරක් සොයනවා...');
+                const response = await axios.get(`https://hercai.onrender.com/v3/hercai`, {
+                    params: { model: "v3", content: fullPrompt },
+                    timeout: 10000 // තත්පර 10කින් උත්තර නැත්නම් Backup එකට යනවා
                 });
+                if (response.data && response.data.reply) {
+                    aiReply = response.data.reply;
+                }
+            } catch (error) {
+                console.log('⚠️ Xiao Wu: පළමු AI එක කාර්යබහුලයි (503/Timeout). Backup AI එකට මාරු වෙනවා...');
+            }
 
-                const data = response.data;
+            // --- API 2: DeepSeek/Llama Backup API (පළමු එක වැඩ නැත්නම් විතරක් ක්‍රියාත්මක වේ) ---
+            if (!aiReply) {
+                try {
+                    const response = await axios.get(`https://api.sandipbbaruwal.gq/llama`, {
+                        params: { prompt: fullPrompt },
+                        timeout: 15000
+                    });
+                    if (response.data && response.data.answer) {
+                        aiReply = response.data.answer;
+                    }
+                } catch (error) {
+                    console.log('❌ Xiao Wu: දෙවන AI එකත් කාර්යබහුලයි:', error.message);
+                }
+            }
 
-                if (data && data.reply) {
-                    const aiReply = data.reply;
+            // --- වට්ස්ඇප් එකට පිළිතුර යැවීම ---
+            if (aiReply) {
+                try {
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
-                } else {
-                    console.log('❌ Xiao Wu AI Error: නිවැරදි දත්ත ලැබුනේ නැත.');
+                } catch (e) {
+                    console.log('Message Send Error:', e.message);
                 }
-
-            } catch (error) {
-                console.log('❌ Xiao Wu AI Error:', error.message);
+            } else {
+                // AI දෙකම වැඩ නැත්නම් විතරක් වැටෙන පණිවිඩය
+                await sock.sendMessage(from, { 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතුවිලි ජාලයන් (AI Servers) මේ වෙලාවේ ගොඩක් කාර්යබහුලයි. චුට්ටක් වෙලා ගිහින් ආයෙමත් මට කතා කරන්නකෝ... 🥺💗` 
+                }, { quoted: msg });
             }
         }
     });
