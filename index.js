@@ -1,11 +1,29 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); 
+const axios = require('axios');
 const config = require('./config');
 
-// 🔑 ස්වාමිනි, ඔයාගේ අලුත්ම Gemini API Key එක මේ ඇතුලට පේස්ට් කරන්න:
-const aiKey = "AIzaSyBEm7BTUBwbssclB8LrCDIknylQUUDE2hM"; 
-const genAI = new GoogleGenerativeAI(aiKey);
+// කිසිම API Key එකක් නැතුව නොමිලේ වැඩ කරන සුපිරි AI පද්ධතියක්
+async function getFreeAIResponse(prompt) {
+    try {
+        const systemInstruction = config.aiSystemPrompt || "Your name is Xiao Wu.";
+        const fullQuery = `${systemInstruction}\n\nUser Question: ${prompt}`;
+        
+        // පළමු නොමිලේ දෙන AI සර්වර් එක
+        const response = await axios.get(`https://api.lolhuman.xyz/api/openai?apikey=free&text=${encodeURIComponent(fullQuery)}`);
+        
+        if (response.data && response.data.result) {
+            return response.data.result;
+        }
+        
+        // Backup AI සර්වර් එක (පළමු එක කාර්යබහුල වුවහොත්)
+        const fallbackRes = await axios.get(`https://api.simsimi.net/v2/?text=${encodeURIComponent(prompt)}&lc=en`);
+        return fallbackRes.data.success || null;
+    } catch (e) {
+        console.log("Free AI API Error:", e.message);
+        return null;
+    }
+}
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
@@ -44,7 +62,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව නිල වශයෙන් ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -71,27 +89,22 @@ async function startXiaoWuBot() {
             }
 
             try {
-                console.log('🔄 Xiao Wu: නිල Google Gemini සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...');
+                console.log('🔄 Xiao Wu: Free Safe AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...');
                 
-                // නිල ස්ථාවරම මොඩලය
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-                // Persona එක සහ User Prompt එක එකතු කිරීම
-                const fullPrompt = `${config.aiSystemPrompt}\n\nUser Question: ${userPrompt}`;
-
-                const result = await model.generateContent(fullPrompt);
-                const aiReply = result.response.text();
+                const aiReply = await getFreeAIResponse(userPrompt);
 
                 if (aiReply) {
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
+                } else {
+                    throw new Error("Free AI servers busy");
                 }
 
             } catch (error) {
-                console.log('❌ Gemini API Error:', error.message);
+                console.log('❌ AI Error:', error.message);
                 await sock.sendMessage(from, { 
-                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ API Key එකේ මොකක් හරි අවුලක් තියෙනවා. Key එක නිවැරදි එකක්මද කියලා පොඩ්ඩක් බලන්නකෝ... 🥺💗` 
+                    text: `🐰 *XIAO WU MD* 🌸\n\nඅනේ ස්වාමිනි, මගේ සිතිවිලි ටිකක් පැටලිලා තියෙන්නේ. තත්පර ගාණකින් ආයෙමත් මට මැසේජ් එකක් දාන්නකෝ... 🥺💗` 
                 }, { quoted: msg });
             }
         }
