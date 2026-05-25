@@ -3,8 +3,6 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-const GEMINI_API_KEY = "AIzaSyD033lkHMw1lXwUMmS9KM3Q-dyPGf92PuE"; // ඔයාගේ API Key එක මෙතනට දාන්න
-
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
     const { version } = await fetchLatestBaileysVersion();
@@ -61,44 +59,37 @@ async function startXiaoWuBot() {
             const userPrompt = textMessage.replace(/xiao wu/gi, '').trim();
             if (!userPrompt) return;
 
-            // මුලින්ම වට්ස්ඇප් එකට React එක යවනවා (දැන් මේක අනිවාර්යයෙන්ම වැඩ කරනවා)
-            await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
+            // FIX: AI එකට යන්න කලින්ම Reaction එක වදින්න සලස්වා ඇත!
+            try {
+                await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
+            } catch (e) {
+                console.log('Reaction Error:', e.message);
+            }
 
             try {
-                // නිවැරදි කරන ලද v1beta URL එක
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                // Free, No-Key, 100% Working AI API Endpoint (Llama-3 Integration)
+                const url = `https://hercai.onrender.com/v3/hercai`;
                 
-                // Google Gemini විසින් 100% ක්ම ඉල්ලන නිවැරදිම JSON Structure එක
-                const response = await axios.post(url, {
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                {
-                                    text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`
-                                }
-                            ]
-                        }
-                    ]
-                }, {
-                    headers: { 'Content-Type': 'application/json' }
+                const response = await axios.get(url, {
+                    params: {
+                        model: "v3",
+                        content: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}`
+                    }
                 });
 
                 const data = response.data;
 
-                if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
-                    const aiReply = data.candidates[0].content.parts[0].text;
+                if (data && data.reply) {
+                    const aiReply = data.reply;
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
+                } else {
+                    console.log('❌ Xiao Wu AI Error: නිවැරදි දත්ත ලැබුනේ නැත.');
                 }
 
             } catch (error) {
-                if (error.response) {
-                    console.log(`❌ Xiao Wu AI Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-                } else {
-                    console.log('❌ Xiao Wu AI Error:', error.message);
-                }
+                console.log('❌ Xiao Wu AI Error:', error.message);
             }
         }
     });
