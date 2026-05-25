@@ -4,7 +4,7 @@ const axios = require('axios');
 const config = require('./config');
 
 // 🔑 ස්වාමිනි, ඔයාගේ අලුත්ම Gemini API Key එක මේ ඇතුලට පේස්ට් කරන්න:
-const geminiApiKey = "ඔයාගේ_අලුත්_API_KEY_එක_මෙතනට_දන්න";
+const geminiApiKey = "AIzaSyBxbOxO0JRQY2eJEiTG9xMKAwQ4zuMRwJQ";
 
 // ස්ථාවර AI එන්ජින් පද්ධතිය
 async function getSmartAIResponse(prompt) {
