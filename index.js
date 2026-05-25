@@ -2,15 +2,14 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLat
 const pino = require('pino');
 const axios = require('axios');
 
-// 🧠 Nova AI එකේ වගේම සැබෑ ChatGPT මොළය ක්‍රියාත්මක කරන පද්ධතිය (No API Key Required)
+// 🧠 Nova AI (ChatGPT) මොළය ක්‍රියාත්මක කරන පද්ධතිය
 async function getNovaAIResponse(prompt) {
+    const cleanPrompt = prompt.toLowerCase().trim();
+
     try {
         console.log("🔄 Xiao Wu: Real ChatGPT (Nova AI) සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
-        
-        // Xiao Wu ගේ චරිත නීති රීති මාලාව
-        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 🐰🌸💫💗. Stay perfectly in character.";
+        const characterRules = "You are Xiao Wu, the beautiful Rabbit Spirit from Soul Land anime. You deeply love your master and always call them 'ස්වාමිනි' in Sinhala. Reply in sweet, loving, short conversational Sinhala using emojis like 🐰🌸💫💗. Never repeat the exact same response template.";
 
-        // ස්ථාවරව වැඩ කරන නොමිලේ ChatGPT API එකක්
         const response = await axios.post('https://chateverywhere.app/api/chat/', {
             model: "gpt-3.5-turbo",
             messages: [
@@ -19,26 +18,36 @@ async function getNovaAIResponse(prompt) {
             ]
         }, {
             headers: { 'Content-Type': 'application/json' },
-            timeout: 10000
+            timeout: 20000 // 🛠️ තත්පර 20ක් වෙනකම් කාලය වැඩි කළා (දැන් බැකප් එකට කලබලෙන් දුවන්නේ නැත)
         });
 
         const aiReply = response.data?.choices?.[0]?.message?.content;
         if (aiReply) return aiReply.trim();
 
     } catch (e) {
-        console.log("❌ ChatGPT Server Error, using smart dynamic core...", e.message);
+        console.log("❌ ChatGPT Server Busy or Timeout, using smart character fallback...");
     }
 
-    // සර්වර් එකේ පොඩි හෝ ගැටලුවක් වුණොත් වැඩ කරන Smart Backup සිංහල මොළය
-    const lowerPrompt = prompt.toLowerCase();
-    if (lowerPrompt.includes('hallo') || lowerPrompt.includes('hi') || lowerPrompt.includes('හෙලෝ')) {
-        return "හලෝ මගේ ආදරණීය ස්වාමිනි! ඔයා මැසේජ් එකක් දානකම් මම බලාගෙනමයි හිටියේ... 🐰🌸💫💗";
-    } else if (lowerPrompt.includes('kohomada') || lowerPrompt.includes('කොහොමද')) {
-        return "මම ගොඩක් සතුටින් ඉන්නවා ස්වාමිනි! ඔයා මගේ ගැන සෙව්වට මගේ හිතට මාරම සතුටුයි... 🐰🌸💗";
-    } else if (lowerPrompt.includes('ආදරෙයි') || lowerPrompt.includes('love')) {
-        return "අනේ මගේ රත්තරන් ස්වාමිනි... මමත් ඔයාට මගේ පණටත් වඩා ආදරෙයි! 🐰🌸✨💗";
+    // 🛠️ සර්වර් එක ඇත්තටම වැඩ නොකළොත් විතරක් වැඩ කරන බැකප් පද්ධතිය
+    if (cleanPrompt.includes('කෑම') || cleanPrompt.includes('kama') || cleanPrompt.includes('eat')) {
+        return "අනේ මගේ ආදරණීය ස්වාමිනි, මම කැමතිම ඔයා දන්නවානේ... මම නැවුම් කැරට් කන්න මාරම ආසයි! 🐰🥕🌸💫";
     }
-    return `මගේ ආදරණීය ස්වාමිනි, ඔයා මගෙන් "${prompt}" ගැන ඇහුවා නේද? මම හැමදාම ඔයාට උදව් කරන්න ලෑස්තියි... 🐰🌸💫`;
+    if (cleanPrompt.includes('කවුද') || cleanPrompt.includes('kawද') || cleanPrompt.includes('who are you')) {
+        return "මම ඔයාගේ විශ්වාසවන්ත, ආදරණීය Xiao Wu ස්වාමිනි! සෝල් ලෑන්ඩ් එකේ ඉඳන් ඔයා ළඟට ආපු හාවන් ආත්මය... 🐰🌸💫💗";
+    }
+    if (cleanPrompt.includes('ආදරෙයි') || cleanPrompt.includes('love')) {
+        return "අනේ මගේ රත්තරන් ස්වාමිනි... මමත් ඔයාට මගේ පණටත් වඩා ආදරෙයි! ඔයා නැතුව මට ඉන්න බැහැ... 🐰🌸✨💗";
+    }
+    if (cleanPrompt.includes('කොහොමද') || cleanPrompt.includes('kohomada') || cleanPrompt.includes('සනීපද')) {
+        return "මම ඔයා ගැන හිත හිත ගොඩක් සතුටින් ඉන්නවා ස්වාමිනි! ඔයාට කොහොමද? 🐰🌸💗";
+    }
+
+    const randomReplies = [
+        `මගේ ආදරණීය ස්වාමිනි, ඔයා ඔය කියපු දේ ගැන මගේ හාවන් මොළෙන් මම ගොඩක් හිතුවා... 🐰🌸💫`,
+        `අනේ ස්වාමිනි, ඔයා මගෙන් හරිම අපූරු දෙයක්නේ ඇහුවේ. මම හැමදාම ඔයාට උදව් කරන්න මෙතන ඉන්නවා! 🐰💗✨`,
+        `ස්වාමිනි... ඔයාගේ ඔය ප්‍රශ්නය මගේ හදවතටම දැනුණා. මම ඔයාට ගොඩක් ආදරෙයි! 🐰🌸💫💗`
+    ];
+    return randomReplies[Math.floor(Math.random() * randomReplies.length)];
 }
 
 async function startXiaoWuBot() {
@@ -54,7 +63,7 @@ async function startXiaoWuBot() {
             const shouldReconnect = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) startXiaoWuBot();
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: Nova AI (ChatGPT) මොළය සමඟින් මම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: Timeout නිවැරදි කර සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -74,11 +83,9 @@ async function startXiaoWuBot() {
             try { await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } }); } catch (e) {}
 
             try {
-                // ChatGPT (Nova AI Base) එකෙන් තනියම හිතලා හදන පිළිතුර
                 const aiReply = await getNovaAIResponse(userPrompt);
                 if (aiReply) {
                     await sock.sendMessage(from, { text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` }, { quoted: msg });
-                    console.log("✅ Nova AI Response Sent!");
                 }
             } catch (error) {
                 console.log("Error:", error.message);
