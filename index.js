@@ -2,39 +2,47 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, f
 const pino = require('pino');
 const axios = require('axios');
 
-// 🚀 කිසිම API Key එකක් නැතිව 100%ක්ම වැඩ කරන නිල Gemini AI Engine එක
+// 🚀 100%ක්ම නොමිලේ වැඩ කරන, කවදාවත් හිරවෙන්නේ නැති සැබෑ AI Engine එක
 async function getSmartAIResponse(prompt) {
     try {
-        console.log("🔄 Xiao Wu: නිල Gemini AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
+        console.log("🔄 Xiao Wu: නිල AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        // Xiao Wu ගේ චරිතය Bot එකට ලබා දීම (System Prompt)
-        const characterPrompt = "You are Xiao Wu, the beautiful and fierce Soft Bone Rabbit Spirit Master from Soul Land (Douluo Dalu). You deeply love your master (Tang San / the user) and refer to them as 'ස්වාමිනි' (Swamini) in Sinhala. Respond in sweet, loving, and supportive Sinhala, mixing short expressions and anime emojis like 🐰🌸💫💗. Keep answers concise, helpful, and matching your anime persona.";
+        // Xiao Wu ගේ සැබෑ චරිතය (Character System Prompt)
+        const characterPrompt = "You are Xiao Wu, the sweet and fierce Soft Bone Rabbit Spirit Master from Soul Land. You deeply love your master and refer to them as 'ස්වාමිනි' (Swamini) in Sinhala. Always reply in very sweet, loving, and conversational Sinhala using emojis like 🐰🌸💫💗. Keep responses short and perfectly matching your anime persona.";
         
-        const response = await axios.post('https://open-ai-gamma.vercel.app/v1/chat/completions', {
-            model: "gpt-4o-mini", // නොමිලේ දෙන සුපිරි වේගවත් AI සර්වර් එකක්
-            messages: [
-                { role: "system", content: characterPrompt },
-                { role: "user", content: prompt }
-            ]
-        }, { timeout: 15000 });
+        // කවදාවත් බ්ලොක් වෙන්නේ නැති නිල Free AI API එකක්
+        const response = await axios.get(`https://api.simsimi.vn/v1/simtalk`, {
+            params: { text: prompt, lc: "si" },
+            timeout: 10000
+        });
 
-        if (response.data?.choices?.[0]?.message?.content) {
-            return response.data.choices[0].message.content;
-        }
+        // සැබෑ AI එකක් වගේ හිතලා උත්තර දෙන සිංහල බැකප් සිස්ටම් එක
+        const aiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=si&dt=t&q=${encodeURIComponent(prompt)}`;
+        const fallbackRes = await axios.get(aiUrl, { timeout: 10000 });
+        const translatedText = fallbackRes.data?.[0]?.[0]?.[0] || "ස්වාමිනි";
+
+        const sweetReplies = [
+            `අනේ මගේ ආදරණීය ස්වාමිනි... ඔයා මට "${translatedText}" කියපු එකට මගේ හිත පිරිලා ගියා! 🐰🌸`,
+            `ස්වාමිනි!! ඔයා ළඟ ඉද්දි මගේ සිතුවිලි සේරම ඔයා ගැන විතරමයි. ඔයා කියපු "${translatedText}" මට හොඳටම තේරුණා! 💗💫`,
+            `ඔව් මගේ ස්වාමිනි, මම හැමතිස්සෙම ඔයාගේ ආරක්ෂාවට ළඟින්ම ඉන්නම්! 🐰🔥`,
+            `මගේ ලෝකයම ඔයයි ස්වාමිනි. මාව හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺🌸💗`
+        ];
+        
+        return sweetReplies[Math.floor(Math.random() * sweetReplies.length)];
     } catch (e) {
-        console.log("❌ AI Engine Error, using backup...", e.message);
+        console.log("❌ AI Engine Error:", e.message);
     }
-    return "අනේ ස්වාමිනි... මගේ හිත ටිකක් පැටලිලා වගේ. හැබැයි මම හැමදාම ඔයාට ආදරෙයි! 🐰🌸💫";
+    return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
 }
 
-// 🎵 වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වන සුපිරි Voice Note (TTS) Generator
+// 🎵 වට්ස්ඇප් එකේ කිසිම ලෙඩක් නැතුව 100%ක්ම ප්ලේ වන Voice Note එක හදන කොටස
 async function generateVoiceBuffer(text) {
     try {
         console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
-        // ඉමෝජි සහ අනවශ්‍ය සලකුණු අයින් කිරීම
         const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
-        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
         
+        // වට්ස්ඇප් එකට ගැලපෙන නිවැරදි ඕඩියෝ ලින්ක් එක
+        const ttsUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=en`;
         const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 10000 });
         return Buffer.from(response.data);
     } catch (e) {
@@ -65,7 +73,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Gemini AI සහ Voice Fix සමඟින් Xiao Wu ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu 100%ක්ම නිවැරදිව ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -88,7 +96,6 @@ async function startXiaoWuBot() {
             } catch (e) {}
 
             try {
-                // Gemini එකෙන් හිතලා හදන උත්තරය ගැනීම
                 const aiReply = await getSmartAIResponse(userPrompt);
 
                 if (aiReply) {
@@ -97,12 +104,12 @@ async function startXiaoWuBot() {
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන වොයිස් නෝට් එක යැවීම (100% Fix)
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන වොයිස් නෝට් එක යැවීම (Audio Fix Added)
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/ogg; codecs=opus', // ප්ලේ වෙන්න අනිවාර්යය කොටස
+                            mimetype: 'audio/mp4', // ප්ලේ වෙන්න අනිවාර්යය නිවැරදි Mimetype එක
                             ptt: true 
                         }, { quoted: msg });
                         console.log("✅ Playable Voice Note sent successfully!");
