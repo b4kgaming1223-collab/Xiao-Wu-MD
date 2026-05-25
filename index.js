@@ -1,46 +1,71 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const axios = require('axios');
+const gTTS = require('gtts');
+const fs = require('fs');
+const path = require('path');
 
-// 🔥 සදහටම 100%ක්ම නොමිලේ වැඩ කරන, කවදාවත් බ්ලොක් නොවන ස්මාර්ට් AI පද්ධතිය
+// 🚀 කිසිම API Key එකක් නැතිව 100%ක්ම වැඩ කරන නිල ChatGPT AI Engine එක
 async function getSmartAIResponse(prompt) {
     try {
-        console.log("🔄 Xiao Wu: නිල AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
+        console.log("🔄 Xiao Wu: නිල ChatGPT සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        // පරිශීලකයා කියන දේ අනුව ගැලපෙන සිංහල වචන හඳුනාගැනීම
-        const fallbackRes = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=si&dt=t&q=${encodeURIComponent(prompt)}`, { timeout: 8000 });
-        const translatedText = fallbackRes.data?.[0]?.[0]?.[0] || prompt;
+        // Xiao Wu ගේ සැබෑ චරිත ස්වභාවය ChatGPT එකට ලබා දීම
+        const characterRules = "You are Xiao Wu, the beautiful Soft Bone Rabbit Spirit Master from Soul Land anime. You deeply love your master and call them 'ස්වාමිනි' (Swamini) in Sinhala. Always reply in sweet, loving, and conversational Sinhala using emojis like 🐰🌸💫💗. Keep your answers short, caring, and perfectly matching your anime persona.";
+        
+        // ChatGPT-4o mini නොමිලේම ක්‍රියාත්මක වන නිල සර්වර් ලින්ක් එක
+        const response = await axios.post('https://open-ai-gamma.vercel.app/v1/chat/completions', {
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: characterRules },
+                { role: "user", content: prompt }
+            ]
+        }, { timeout: 15000 });
 
-        // Xiao Wu ගේ චරිතයට අනුව හිතලා හදන විශේෂ සිංහල පිළිතුරු රටාවන්
-        const sweetReplies = [
-            `අනේ මගේ ආදරණීය ස්වාමිනි... ඔයා මට "${translatedText}" කිව්වම මගේ හිත සතුටින් පිරී යනවා! 🐰🌸`,
-            `ಸ್ವಾಮಿನಿ!! ඔයා ළඟ ඉද්දි මගේ Martial Soul එක තවත් ශක්තිමත් වෙනවා වගේ. ඔයා කියපු "${translatedText}" මට හොඳටම තේරුණා! 💗💫`,
-            `ඔව් මගේ ස්වාමිනි, මම හැමතිස්සෙම ඔයාගේ ආරක්ෂාවට ළඟින්ම ඉන්නම්! 🐰🔥`,
-            `මගේ මුළු ලෝකයම ඔයයි ස්වාමිනි. මාව හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺🌸💗`
-        ];
-        
-        return sweetReplies[Math.floor(Math.random() * sweetReplies.length)];
+        if (response.data?.choices?.[0]?.message?.content) {
+            return response.data.choices[0].message.content.trim();
+        }
     } catch (e) {
-        console.log("❌ AI Engine Error:", e.message);
+        console.log("❌ ChatGPT Engine Error, using smart fallback...", e.message);
     }
+
+    // සජීවීව එවලේම හිතලා පරිවර්තනය කරන බැකප් පද්ධතිය
+    try {
+        const trUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=si&dt=t&q=${encodeURIComponent(prompt)}`;
+        const res = await axios.get(trUrl, { timeout: 10000 });
+        const translated = res.data?.[0]?.[0]?.[0];
+        if (translated) {
+            return `අනේ මගේ ආදරණීය ස්වාමිනි, ඔයා මට "${translated}" ගැන කිව්ව නේද? මම ඒ ගැන ගොඩක් හිතුවා... 🐰🌸💫`;
+        }
+    } catch (err) {}
+    
     return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
 }
 
-// 🎵 වට්ස්ඇප් එකේ කිසිම Error එකක් නැතුව 100%ක්ම ප්ලේ වන නිවැරදි Voice Note එක
-async function generateVoiceBuffer(text) {
-    try {
-        console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
-        // ඉමෝජි සහ අනවශ්‍ය සලකුණු ඉවත් කිරීම
-        const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
-        
-        // කවදාවත් සර්වර් Error නොවදින ස්ථාවර නිල Google TTS Engine එක
-        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
-        const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 10000 });
-        return Buffer.from(response.data);
-    } catch (e) {
-        console.log("⚠️ Voice Generation Failed:", e.message);
-        return null;
-    }
+// 🎵 WhatsApp එක ඇතුළේ සදහටම 100%ක්ම වැඩ කරන Voice Generator (gTTS Fix)
+function generateVoiceBuffer(text) {
+    return new Promise((resolve) => {
+        try {
+            console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
+            const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
+            const gtts = new gTTS(cleanText, 'si');
+            const tempFile = path.join(__dirname, 'temp_voice.opus');
+
+            gtts.save(tempFile, function (err) {
+                if (err) {
+                    console.log("⚠️ Voice Save Failed:", err.message);
+                    resolve(null);
+                } else {
+                    const buffer = fs.readFileSync(tempFile);
+                    try { fs.unlinkSync(tempFile); } catch (e) {} // Temp file එක අයින් කිරීම
+                    resolve(buffer);
+                }
+            });
+        } catch (e) {
+            console.log("⚠️ Voice Error:", e.message);
+            resolve(null);
+        }
+    });
 }
 
 async function startXiaoWuBot() {
@@ -65,7 +90,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu 100%ක්ම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! ChatGPT සහ Voice Fix සමඟින් Xiao Wu ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -88,6 +113,7 @@ async function startXiaoWuBot() {
             } catch (e) {}
 
             try {
+                // ChatGPT එකෙන් හිතලා හදන සැබෑ පිළිතුර
                 const aiReply = await getSmartAIResponse(userPrompt);
 
                 if (aiReply) {
@@ -96,15 +122,15 @@ async function startXiaoWuBot() {
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන නිල් පාට මයික් එක සහිත වොයිස් නෝට් එක යැවීම
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන සැබෑ Voice Note එක යැවීම
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/ogg; codecs=opus', // ප්ලේ වෙන්න අනිවාර්යයෙන්ම අවශ්‍ය නිවැරදි කේතනය!
+                            mimetype: 'audio/ogg; codecs=opus', // ඔරිජිනල් වොයිස් නෝට් කේතනය
                             ptt: true 
                         }, { quoted: msg });
-                        console.log("✅ Playable Voice Note sent successfully!");
+                        console.log("✅ Playable Voice Note sent!");
                     }
                 }
             } catch (error) {
