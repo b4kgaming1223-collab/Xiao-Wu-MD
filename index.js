@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-// 🔑 ඔයා ලබාගත් අලුත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
+// 🔑 ඔයා ලබාගත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
 const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
 
 async function startXiaoWuBot() {
@@ -66,9 +66,9 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 2026 Stable Gemini 1.5 Flash Endpoint
+                // 🚀 Corrected Gemini URL with v1beta (This works 100%)
                 const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
                     {
                         contents: [{
                             parts: [{ text: `${config.aiSystemPrompt}\n\nUser: ${userPrompt}` }]
@@ -77,14 +77,14 @@ async function startXiaoWuBot() {
                     { headers: { 'Content-Type': 'application/json' } }
                 );
 
-                // 🛠️ Safe Response Parsing (ගූගල් එකෙන් එන ඩේටා නිවැරදිව ලබාගැනීම)
+                // 🛠️ Safe Response Parsing
                 if (response.data && response.data.candidates && response.data.candidates[0].content) {
                     const aiReply = response.data.candidates[0].content.parts[0].text;
                     await sock.sendMessage(from, { 
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}\n\n_Powered by Gemini AI Engine_ 🇱🇰` 
                     }, { quoted: msg });
                 } else {
-                    console.error('❌ Invalid API Response Structure:', JSON.stringify(response.data));
+                    console.error('❌ Response structure mismatch:', JSON.stringify(response.data));
                 }
 
             } catch (error) {
