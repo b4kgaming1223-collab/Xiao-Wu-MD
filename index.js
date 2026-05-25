@@ -3,7 +3,7 @@ const pino = require('pino');
 const axios = require('axios');
 const config = require('./config');
 
-// 🔑 ඔයා ලබාදුන් Gemini API Key එක සාර්ථකව ඇතුළත් කර ඇත
+// 🔑 ඔයා ලබාගත් අලුත් Gemini API Key එක මෙතනට දාන්න ලියෝ 👇
 const GEMINI_API_KEY = "AIzaSyBTQfOdu6081-7_XOVomUN-UVI__ONCADo";
 
 async function startXiaoWuBot() {
@@ -66,9 +66,9 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // 🚀 Direct Gemini API Call
+                // 🚀 Updated Stable Gemini v1 API Call
                 const response = await axios.post(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+                    `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
                     {
                         contents: [{
                             parts: [{ text: `${config.aiSystemPrompt}\n\nUser: ${userPrompt}` }]
