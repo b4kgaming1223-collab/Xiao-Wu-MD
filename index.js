@@ -64,12 +64,11 @@ async function startXiaoWuBot() {
             await sock.sendMessage(from, { react: { text: "🐰", key: msg.key } });
 
             try {
-                // ස්ථාාවර කරන ලද v1beta URL එක
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                // මෙතන Stable v1 URL එකට සහ නිවැරදි Endpoint එකට මාරු කර ඇත
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
                 const response = await axios.post(url, {
                     contents: [{
-                        role: "user",
                         parts: [{ text: `${config.aiSystemPrompt}\n\nUser Message: ${userPrompt}` }]
                     }]
                 }, {
@@ -86,7 +85,12 @@ async function startXiaoWuBot() {
                 }
 
             } catch (error) {
-                console.log('❌ Xiao Wu AI Error:', error.message);
+                // Error එකක් ආවොත් ඒකෙ විස්තරේ බලාගන්න මේක වෙනස් කලා
+                if (error.response) {
+                    console.log(`❌ Xiao Wu AI Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+                } else {
+                    console.log('❌ Xiao Wu AI Error:', error.message);
+                }
             }
         }
     });
