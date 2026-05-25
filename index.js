@@ -4,7 +4,7 @@ const axios = require('axios');
 const config = require('./config');
 
 // 🔑 OpenRouter AI API Key
-const OPENROUTER_API_KEY = "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";
+const OPENROUTER_API_KEY = "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";
 
 async function startXiaoWuBot() {
     const { state, saveCreds } = await useMultiFileAuthState('xiao_wu_session');
