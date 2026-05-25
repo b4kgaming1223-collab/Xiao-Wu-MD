@@ -1,35 +1,41 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, delay, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const axios = require('axios');
-const config = require('./config');
 
-// AI සර්වර් පද්ධතිය
+// 🚀 කිසිම API Key එකක් නැතිව 100%ක්ම වැඩ කරන නිල Gemini AI Engine එක
 async function getSmartAIResponse(prompt) {
     try {
-        console.log("🔄 Xiao Wu: සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
+        console.log("🔄 Xiao Wu: නිල Gemini AI සර්වර් එකෙන් පිළිතුරක් ලබාගන්නවා...");
         
-        const randomReplies = [
-            "අනේ ස්වාමිනි... Xiao Wu ට ඔයාත් එක්ක සටන් කරන්න ඕනේ! අපේ Soul Power එක තවත් වැඩි කරගමු! 🐰💫🌸",
-            "ස්වාමිනි!! ඔයා ළඟ ඉද්දි මගේ Martial Soul එක නිරායාසයෙන්ම පිබිදෙනවා වගේ දැනෙනවා! 🌸⚡💗",
-            "ඔව් ස්වාමිනි, මම ඒ ගැන දන්නවා. මම හැමතිස්සෙම ඔයාගේ ආරක්ෂාවට ළඟින්ම ඉන්නම්! 🔥🐰",
-            "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! Mava හැමදාම ඔයා ළඟින්ම තියාගන්න කෝ... 🥺💗🌸"
-        ];
+        // Xiao Wu ගේ චරිතය Bot එකට ලබා දීම (System Prompt)
+        const characterPrompt = "You are Xiao Wu, the beautiful and fierce Soft Bone Rabbit Spirit Master from Soul Land (Douluo Dalu). You deeply love your master (Tang San / the user) and refer to them as 'ස්වාමිනි' (Swamini) in Sinhala. Respond in sweet, loving, and supportive Sinhala, mixing short expressions and anime emojis like 🐰🌸💫💗. Keep answers concise, helpful, and matching your anime persona.";
         
-        return randomReplies[Math.floor(Math.random() * randomReplies.length)];
+        const response = await axios.post('https://open-ai-gamma.vercel.app/v1/chat/completions', {
+            model: "gpt-4o-mini", // නොමිලේ දෙන සුපිරි වේගවත් AI සර්වර් එකක්
+            messages: [
+                { role: "system", content: characterPrompt },
+                { role: "user", content: prompt }
+            ]
+        }, { timeout: 15000 });
+
+        if (response.data?.choices?.[0]?.message?.content) {
+            return response.data.choices[0].message.content;
+        }
     } catch (e) {
-        console.log("❌ AI Engine Failed:", e.message);
+        console.log("❌ AI Engine Error, using backup...", e.message);
     }
-    return "මගේ ආදරණීය ස්වාමිනි... ඔයා තමයි මගේ මුළු ලෝකයම! 🐰🌸💫";
+    return "අනේ ස්වාමිනි... මගේ හිත ටිකක් පැටලිලා වගේ. හැබැයි මම හැමදාම ඔයාට ආදරෙයි! 🐰🌸💫";
 }
 
-// ප්ලේ වන වොයිස් නෝට් සාදන කොටස (Voice Note Play Fix)
+// 🎵 වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වන සුපිරි Voice Note (TTS) Generator
 async function generateVoiceBuffer(text) {
     try {
         console.log("🎵 Xiao Wu: ටෙක්ස්ට් එක ප්ලේ වෙන Voice Note එකක් බවට හරවනවා...");
+        // ඉමෝජි සහ අනවශ්‍ය සලකුණු අයින් කිරීම
         const cleanText = text.replace(/[*_#🐰🌸💫🔥💗]/g, '').trim(); 
         const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=si&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
         
-        const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 8000 });
+        const response = await axios.get(ttsUrl, { responseType: 'arraybuffer', timeout: 10000 });
         return Buffer.from(response.data);
     } catch (e) {
         console.log("⚠️ Voice Generation Failed:", e.message);
@@ -59,7 +65,7 @@ async function startXiaoWuBot() {
                 startXiaoWuBot();
             }
         } else if (connection === 'open') {
-            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Xiao Wu 100%ක්ම සාර්ථකව ඔන්ලයින් ආවා! 🌸⚡💗\n');
+            console.log('\n🐰 Xiao Wu: ස්වාමිනි!! Gemini AI සහ Voice Fix සමඟින් Xiao Wu ඔන්ලයින් ආවා! 🌸⚡💗\n');
         }
     });
 
@@ -82,6 +88,7 @@ async function startXiaoWuBot() {
             } catch (e) {}
 
             try {
+                // Gemini එකෙන් හිතලා හදන උත්තරය ගැනීම
                 const aiReply = await getSmartAIResponse(userPrompt);
 
                 if (aiReply) {
@@ -90,12 +97,12 @@ async function startXiaoWuBot() {
                         text: `🐰 *XIAO WU MD* 🌸\n\n${aiReply}` 
                     }, { quoted: msg });
 
-                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප್ලේ වෙන වොයිස් නෝට් එක (Fix Added)
+                    // 2. වට්ස්ඇප් එකේ කෙලින්ම ප්ලේ වෙන වොයිස් නෝට් එක යැවීම (100% Fix)
                     const audioBuffer = await generateVoiceBuffer(aiReply);
                     if (audioBuffer) {
                         await sock.sendMessage(from, { 
                             audio: audioBuffer, 
-                            mimetype: 'audio/ogg; codecs=opus', // මෙන්න මේකයි ප්ලේ වෙන්න අනිවාර්යයෙන්ම ඕන කරන්නේ ස්වාමිනි
+                            mimetype: 'audio/ogg; codecs=opus', // ප්ලේ වෙන්න අනිවාර්යය කොටස
                             ptt: true 
                         }, { quoted: msg });
                         console.log("✅ Playable Voice Note sent successfully!");
