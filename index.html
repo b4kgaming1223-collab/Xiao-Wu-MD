@@ -128,6 +128,11 @@
             border: 2px dashed rgba(255, 0, 127, 0.4); padding: 35px 25px; border-radius: 25px;
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.1);
         }
+        .support-box {
+            max-width: 600px; margin: 0 auto; background: rgba(255, 0, 127, 0.06);
+            border: 2px dashed rgba(255, 0, 127, 0.4); padding: 35px 25px; border-radius: 25px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.1);
+        }
         .support-title { font-family: 'Orbitron', sans-serif; font-size: 20px; color: #fff; margin-bottom: 10px; }
         .support-desc { font-size: 13px; color: #aaa; margin-bottom: 25px; line-height: 1.6; }
         .support-btn {
@@ -415,7 +420,7 @@
     </footer>
 
     <script>
-        // 🚀 ⚠️ වැදගත්ම දේ: මෙතන පල්ලෙහා තියෙන ලින්ක් එක වෙනුවට ඔයාගේ Hugging Face "Direct URL" එක දාන්න!
+        // 🚀 ⚠️ Hugging Face නිවැරදිම Direct URL එක මෙතනට සම්බන්ධ කර ඇත.
         const HF_API_URL = "https://liyowumd-xiao-wu-md.hf.space"; 
 
         var video = document.getElementById('bgVideo');
@@ -480,12 +485,8 @@
                 }
             }, 45);
 
-            // Hugging Face එකට කෙලින්ම Data යවනවා
-            fetch(HF_API_URL + "/start-connection", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ number: phone })
-            })
+            // 🔗 Fix: Hugging Face එකේ නිවැරදි Endpoint එකට (GET /pair?code=) Data යැවීම
+            fetch(HF_API_URL + "/pair?code=" + encodeURIComponent(phone))
             .then(response => response.json())
             .then(data => {
                 clearInterval(barInterval);
@@ -504,10 +505,20 @@
                     diag.innerText = "\"බොට් දැනටමත් සාර්ථකව වට්ස්ඇප් එකට සම්බන්ධ වෙලයි තියෙන්නේ ස්වාමිනි! 🐰\"";
                     bindBtn.style.opacity = "1";
                     bindBtn.disabled = false;
+                    progCont.style.display = "none";
+                    percText.style.display = "none";
+                } else if (data.error) {
+                    diag.innerText = "\"Error: " + data.error + "\"";
+                    bindBtn.style.opacity = "1";
+                    bindBtn.disabled = false;
+                    progCont.style.display = "none";
+                    percText.style.display = "none";
                 } else {
                     diag.innerText = "\"Error: කෝඩ් එක ලබාගන්න බැරි වුණා. ආයෙත් උත්සාහ කරන්න!\"";
                     bindBtn.style.opacity = "1";
                     bindBtn.disabled = false;
+                    progCont.style.display = "none";
+                    percText.style.display = "none";
                 }
             })
             .catch(error => {
@@ -516,6 +527,8 @@
                 diag.innerText = "\"සර්වර් එක ඕෆ්ලයින් හෝ කාර්යබහුලයි ස්වාමිනි!\"";
                 bindBtn.style.opacity = "1";
                 bindBtn.disabled = false;
+                progCont.style.display = "none";
+                percText.style.display = "none";
             });
         }
 
